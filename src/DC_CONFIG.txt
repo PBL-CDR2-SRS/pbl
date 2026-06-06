@@ -16,8 +16,7 @@ iface eth0 inet static
     netmask 255.255.255.248
     gateway 10.30.0.1
 
-3. Servidor FTP (Informática)
-
+# 3. Servidor FTP (Informática)
 auto eth0
 iface eth0 inet static
     address 10.30.0.5
@@ -39,14 +38,14 @@ vlan 100
  name Servidores-DC
 vlan 90
  name Gestao
-vlan 60
- name Convidados
+vlan 999
+ name ParkingLot
 exit
 
 interface Ethernet0/0
  switchport mode trunk
- switchport trunk native vlan 60
- switchport trunk allowed vlan 90,100
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 90,100,999
 exit
 
 interface range Ethernet0/1 - 3
@@ -73,6 +72,11 @@ exit
 
 interface Ethernet0/1
  no shutdown
+exit
+
+interface Ethernet0/1.90
+ encapsulation dot1Q 90
+ ip address 10.30.1.1 255.255.255.240
 exit
 
 interface Ethernet0/1.100
@@ -131,7 +135,7 @@ ip dhcp pool PROFESSORES-EDA
  dns-server 8.8.8.8
 exit
 
-# Informática Ed.A (Acomoda ~14 hosts)
+# Informática Ed.A (Acomoda ~5 hosts)
 ip dhcp pool INFORMATICA-EDA
  network 10.10.2.0 255.255.255.248
  default-router 10.10.2.1
@@ -223,7 +227,7 @@ ip dhcp pool GESTAO-EDB
  dns-server 8.8.8.8
 exit
 
-#Não esquecer de meter helper address depois assim -> ip helper-address 10.30.0.2
+#Não esquecer de meter helper address depois assim -> ip helper-address 10.30.0.1
 
 
 =================================================================================================================
@@ -263,6 +267,7 @@ exit
 
 #Rotas Estáticas Internas
 ip route 10.30.0.0 255.255.255.248 10.99.0.1   # Rota para o Datacenter
+ip route 10.30.1.0 255.255.255.240 10.99.0.1   # Rota para a Gestão DC
 ip route 10.10.0.0 255.255.240.0 10.99.0.10   # Rota para o Edifício A
 ip route 10.20.0.0 255.255.240.0 10.99.0.14   # Rota para o Edifício B
 
@@ -296,6 +301,7 @@ exit
 ip route 10.10.0.0 255.255.240.0 10.99.0.5   # Rota para a rede do Edifício A
 ip route 10.20.0.0 255.255.240.0 10.99.0.5   # Rota para a rede do Edifício B
 ip route 10.30.0.0 255.255.255.248 10.99.0.5   # Rota para a rede do Datacenter
+ip route 10.30.1.0 255.255.255.240 10.99.0.5   # Rota para a Gestão DC
 ip route 10.99.0.0 255.255.255.0 10.99.0.5   # Rota para os links WAN internos (entre routers)
 
 
@@ -312,7 +318,7 @@ hostname ROUTER-EDA
 # ALUNOS ED.A (Rede 10.10.0.0 /25)
 # Permitido: DHCP, HTTP Institucional, Impressoras Ed.A, Inter-edifícios (Ed.B) e Internet.
 ip access-list extended ACL-ALUNOS-EDA
- permit udp any host 10.30.0.1 eq 67
+ permit udp any host 255.255.255.255 eq 67
  permit tcp 10.10.0.0 0.0.0.127 host 10.30.0.3 eq 80
  permit ip 10.10.0.0 0.0.0.127 10.10.5.0 0.0.0.15
  permit ip 10.10.0.0 0.0.0.127 10.20.0.0 0.0.15.255
@@ -322,7 +328,7 @@ ip access-list extended ACL-ALUNOS-EDA
 # PROFESSORES ED.A (Rede 10.10.1.0 /26)
 # Permitido: DHCP, HTTP Inst. e Interno, Impressoras Ed.A, Inter-edifícios (Ed.B) e Internet.
 ip access-list extended ACL-PROF-EDA
- permit udp any host 10.30.0.1 eq 67
+ permit udp any host 255.255.255.255 eq 67
  permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.3 eq 80
  permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.4 eq 80
  permit ip 10.10.1.0 0.0.0.63 10.10.5.0 0.0.0.15
@@ -338,28 +344,46 @@ ip access-list extended ACL-INFO-EDA
 # TELEFONES ED.A (Rede 10.10.4.0 /27)
 # Permitido: DHCP e Inter-edifícios (Ed.B) apenas.
 ip access-list extended ACL-TELEFONES-EDA
- permit udp any host 10.30.0.1 eq 67
+ permit udp any host 255.255.255.255 eq 67
  permit ip 10.10.4.0 0.0.0.31 10.20.0.0 0.0.15.255
  deny ip any any
 
 # IMPRESSORAS ED.A (Rede 10.10.5.0 /28)
 # Permitido: DHCP apenas.
 ip access-list extended ACL-IMPRESSORAS-EDA
- permit udp any host 10.30.0.1 eq 67
+ permit udp any host 255.255.255.255 eq 67
+ deny ip any any
+
+# CONVIDADOS ED.A (Rede 10.10.3.0 /28) - Adicionado da Auditoria
+# Permitido: DHCP e Internet.
+ip access-list extended ACL-CONVIDADOS-EDA
+ permit udp any host 255.255.255.255 eq 67
+ deny ip 10.10.3.0 0.0.0.15 10.0.0.0 0.255.255.255 # Bloqueia tráfego interno
+ permit ip 10.10.3.0 0.0.0.15 any                  # Permite Internet
+
+# GESTÃO ED.A (Rede 10.10.6.0 /28) - Adicionado da Auditoria
+# Permitido: Acesso inter-edifício e DHCP.
+ip access-list extended ACL-GESTAO-EDA
+ permit udp any host 255.255.255.255 eq 67
+ permit ip 10.10.6.0 0.0.0.15 10.20.0.0 0.0.15.255
  deny ip any any
 
 # Aplicação nas sub-interfaces do router Ed.A 
-# (NOTA PARA A DEFESA: Confirmar com o Romeu se as portas são e0/0 e os IDs das VLANs batem certo#)
-interface Ethernet0/0.10
+# ROMEU: VALIDA SE A PORTA TRUNK É A ETHERNET0/1. SE FOR OUTRA (EX: E0/2), MUDA EM BAIXO!
+interface Ethernet0/1.10
  ip access-group ACL-ALUNOS-EDA in
-interface Ethernet0/0.20
+interface Ethernet0/1.20
  ip access-group ACL-PROF-EDA in
-interface Ethernet0/0.50
+interface Ethernet0/1.50
  ip access-group ACL-INFO-EDA in
-interface Ethernet0/0.70
+interface Ethernet0/1.60
+ ip access-group ACL-CONVIDADOS-EDA in
+interface Ethernet0/1.70
  ip access-group ACL-TELEFONES-EDA in
-interface Ethernet0/0.80
+interface Ethernet0/1.80
  ip access-group ACL-IMPRESSORAS-EDA in
+interface Ethernet0/1.90
+ ip access-group ACL-GESTAO-EDA in
 exit
 
 
@@ -367,7 +391,7 @@ exit
 =================================================================================================================
 =================================================================================================================
 
-#ROUTER-DC
+#ROUTER-DC (ACL)
 
 enable
 configure terminal
@@ -379,6 +403,9 @@ ip access-list extended ACL-WAN-IN
  #PERMITIR PING (ICMP) PARA TESTES DO PROJETO 
  permit icmp 10.10.0.0 0.0.15.255 10.30.0.0 0.0.0.7 echo
  permit icmp 10.20.0.0 0.0.15.255 10.30.0.0 0.0.0.7 echo
+ permit icmp any host 10.30.0.3 echo-reply
+ permit icmp any host 10.30.0.4 echo-reply
+ permit icmp any host 10.30.0.5 echo-reply
  
  #HTTP INSTITUCIONAL (.3) -> Aberto a toda a Universidade e Internet (TCP 80)
  permit tcp any host 10.30.0.3 eq 80
@@ -388,9 +415,8 @@ ip access-list extended ACL-WAN-IN
  permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.4 eq 80  # Professores Ed.B
  permit tcp 10.20.3.0 0.0.0.31 host 10.30.0.4 eq 80  # Académicos Ed.B
  
- #FTP (.5) - Restrito à Informática Ed.A (Portas TCP 21 Control e 20 Data)
+ #FTP (.5) - Restrito à Informática Ed.A (Porta TCP 21 Control)
  permit tcp 10.10.2.0 0.0.0.7 host 10.30.0.5 eq 21
- permit tcp 10.10.2.0 0.0.0.7 host 10.30.0.5 eq 20
  
  #BLOQUEAR RESTO COM LOG DE AUDITORIA
  deny ip any any log
@@ -413,7 +439,6 @@ Problema 2: Prevenção de Routing Loops na Sumarização (Black Hole Route)
 O Romeu e o Ricardo precisam de colocar estas rotas nos respetivos routers para 
 descartar tráfego destinado a IPs não utilizados dentro do bloco /20, 
 evitando que o tráfego volte para trás pela rota default.
-
 No Router-Edifício A (Romeu):
 ip route 10.10.0.0 255.255.240.0 Null0
 
