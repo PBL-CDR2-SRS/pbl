@@ -43,14 +43,13 @@ vlan 60
  name Convidados
 exit
 
-interface GigabitEthernet0/1
- switchport trunk encapsulation dot1q
+interface Ethernet0/0
  switchport mode trunk
  switchport trunk native vlan 60
  switchport trunk allowed vlan 90,100
 exit
 
-interface range GigabitEthernet0/2 - 5
+interface range Ethernet0/1 - 3
  switchport mode access
  switchport access vlan 100
  spanning-tree portfast
@@ -67,19 +66,18 @@ configure terminal
 hostname ROUTER-DC
 no ip domain-lookup
 
-interface GigabitEthernet0/0
- no shutdown
-exit
-
-interface GigabitEthernet0/0.100
- encapsulation dot1Q 100
- ip address 10.30.0.1 255.255.255.248
- no shutdown
-exit
-
-interface GigabitEthernet0/1
+interface Ethernet0/0
  ip address 10.99.0.1 255.255.255.252
  no shutdown
+exit
+
+interface Ethernet0/1
+ no shutdown
+exit
+
+interface Ethernet0/1.100
+ encapsulation dot1Q 100
+ ip address 10.30.0.1 255.255.255.248
 exit
 
 =================================================================================================================
@@ -101,22 +99,22 @@ ip route 0.0.0.0 0.0.0.0 10.99.0.2          # Rota Default (Saída para a net)
 
 # EXCLUSÕES -> EDIFÍCIO A
 ip dhcp excluded-address 10.10.0.1 10.10.0.10      # Alunos
-ip dhcp excluded-address 10.10.0.129 10.10.0.138   # Professores
-ip dhcp excluded-address 10.10.0.193 10.10.0.202   # Informática
-ip dhcp excluded-address 10.10.0.209 10.10.0.218   # Convidados
-ip dhcp excluded-address 10.10.0.225 10.10.0.234   # Telefones
-ip dhcp excluded-address 10.10.1.1 10.10.1.10      # Impressoras
-ip dhcp excluded-address 10.10.1.17 10.10.1.26     # Gestão
+ip dhcp excluded-address 10.10.1.1 10.10.1.5       # Professores
+ip dhcp excluded-address 10.10.2.1                 # Informática
+ip dhcp excluded-address 10.10.3.1 10.10.3.2       # Convidados
+ip dhcp excluded-address 10.10.4.1 10.10.4.5       # Telefones
+ip dhcp excluded-address 10.10.5.1 10.10.5.2       # Impressoras
+ip dhcp excluded-address 10.10.6.1 10.10.6.2       # Gestão
 
 # EXCLUSÕES -> EDIFÍCIO B
 ip dhcp excluded-address 10.20.0.1 10.20.0.10      # Alunos
-ip dhcp excluded-address 10.20.1.1 10.20.1.10      # Professores
-ip dhcp excluded-address 10.20.1.65 10.20.1.74     # Financeiros
-ip dhcp excluded-address 10.20.1.97 10.20.1.106    # Académicos
-ip dhcp excluded-address 10.20.1.129 10.20.1.138   # Convidados
-ip dhcp excluded-address 10.20.1.145 10.20.1.154   # Telefones
-ip dhcp excluded-address 10.20.1.177 10.20.1.186   # Impressoras
-ip dhcp excluded-address 10.20.1.193 10.20.1.202   # Gestão
+ip dhcp excluded-address 10.20.1.1 10.20.1.5       # Professores
+ip dhcp excluded-address 10.20.2.1 10.20.2.2       # Financeiros
+ip dhcp excluded-address 10.20.3.1 10.20.3.5       # Académicos
+ip dhcp excluded-address 10.20.4.1 10.20.4.2       # Convidados
+ip dhcp excluded-address 10.20.5.1 10.20.5.5       # Telefones
+ip dhcp excluded-address 10.20.6.1 10.20.6.2       # Impressoras
+ip dhcp excluded-address 10.20.7.1 10.20.7.2       # Gestão
 
 
 # Alunos Ed.A (Acomoda ~80 hosts)
@@ -128,43 +126,43 @@ exit
 
 # Professores Ed.A (Acomoda ~60 hosts)
 ip dhcp pool PROFESSORES-EDA
- network 10.10.0.128 255.255.255.192
- default-router 10.10.0.129
+ network 10.10.1.0 255.255.255.192
+ default-router 10.10.1.1
  dns-server 8.8.8.8
 exit
 
 # Informática Ed.A (Acomoda ~14 hosts)
 ip dhcp pool INFORMATICA-EDA
- network 10.10.0.192 255.255.255.240
- default-router 10.10.0.193
+ network 10.10.2.0 255.255.255.248
+ default-router 10.10.2.1
  dns-server 8.8.8.8
 exit
 
 # Convidados Ed.A (Acomoda ~14 hosts)
 ip dhcp pool CONVIDADOS-EDA
- network 10.10.0.208 255.255.255.240
- default-router 10.10.0.209
+ network 10.10.3.0 255.255.255.240
+ default-router 10.10.3.1
  dns-server 8.8.8.8
 exit
 
 # Telefones Ed.A (Acomoda ~30 hosts)
 ip dhcp pool TELEFONES-EDA
- network 10.10.0.224 255.255.255.224
- default-router 10.10.0.225
+ network 10.10.4.0 255.255.255.224
+ default-router 10.10.4.1
  dns-server 8.8.8.8
 exit
 
 # Impressoras Ed.A (Acomoda ~14 hosts)
 ip dhcp pool IMPRESSORAS-EDA
- network 10.10.1.0 255.255.255.240
- default-router 10.10.1.1
+ network 10.10.5.0 255.255.255.240
+ default-router 10.10.5.1
  dns-server 8.8.8.8
 exit
 
 # Gestão Ed.A (Acomoda ~14 hosts)
 ip dhcp pool GESTAO-EDA
- network 10.10.1.16 255.255.255.240
- default-router 10.10.1.17
+ network 10.10.6.0 255.255.255.240
+ default-router 10.10.6.1
  dns-server 8.8.8.8
 exit
 
@@ -185,43 +183,43 @@ exit
 
 # Financeiros Ed.B (Acomoda ~10 hosts)
 ip dhcp pool FINANCEIROS-EDB
- network 10.20.1.64 255.255.255.224
- default-router 10.20.1.65
+ network 10.20.2.0 255.255.255.240
+ default-router 10.20.2.1
  dns-server 8.8.8.8
 exit
 
 # Académicos Ed.B (Acomoda ~16 hosts)
 ip dhcp pool ACADEMICOS-EDB
- network 10.20.1.96 255.255.255.224
- default-router 10.20.1.97
+ network 10.20.3.0 255.255.255.224
+ default-router 10.20.3.1
  dns-server 8.8.8.8
 exit
 
 # Convidados Ed.B (Acomoda ~5 hosts)
 ip dhcp pool CONVIDADOS-EDB
- network 10.20.1.128 255.255.255.240
- default-router 10.20.1.129
+ network 10.20.4.0 255.255.255.240
+ default-router 10.20.4.1
  dns-server 8.8.8.8
 exit
 
 # Telefones Ed.B (Acomoda ~25 hosts)
 ip dhcp pool TELEFONES-EDB
- network 10.20.1.144 255.255.255.224
- default-router 10.20.1.145
+ network 10.20.5.0 255.255.255.192
+ default-router 10.20.5.1
  dns-server 8.8.8.8
 exit
 
 # Impressoras Ed.B (Acomoda ~7 hosts)
 ip dhcp pool IMPRESSORAS-EDB
- network 10.20.1.176 255.255.255.240
- default-router 10.20.1.177
+ network 10.20.6.0 255.255.255.240
+ default-router 10.20.6.1
  dns-server 8.8.8.8
 exit
 
 # Gestão Ed.B (Acomoda ~10 hosts)
 ip dhcp pool GESTAO-EDB
- network 10.20.1.192 255.255.255.240
- default-router 10.20.1.193
+ network 10.20.7.0 255.255.255.240
+ default-router 10.20.7.1
  dns-server 8.8.8.8
 exit
 
@@ -240,25 +238,25 @@ hostname ROUTER-CENTRAL
 no ip domain-lookup
 
 #Interface para o Router-DC
-interface GigabitEthernet0/0
+interface Ethernet0/3
  ip address 10.99.0.2 255.255.255.252
  no shutdown
 exit
 
 #Interface para o Router-ISP
-interface GigabitEthernet0/1
+interface Ethernet0/0
  ip address 10.99.0.5 255.255.255.252
  no shutdown
 exit
 
-#Interface para o Router-EdificioA (coordenar a porta exata com o Romeu)
-interface GigabitEthernet0/2
+#Interface para o Router-EdificioA
+interface Ethernet0/1
  ip address 10.99.0.9 255.255.255.252
  no shutdown
 exit
 
-#Interface para o Router-EdificioB (coordenar a porta exata com o Ricardo)
-interface GigabitEthernet0/3
+#Interface para o Router-EdificioB
+interface Ethernet0/2
  ip address 10.99.0.13 255.255.255.252
  no shutdown
 exit
@@ -283,13 +281,13 @@ hostname ROUTER-ISP
 no ip domain-lookup
 
 #Interface interna (virada para o Router-Central)
-interface GigabitEthernet0/0
+interface Ethernet0/1
  ip address 10.99.0.6 255.255.255.252
  no shutdown
 exit
 
 #Interface externa (virada para a NET)
-interface GigabitEthernet0/1
+interface Ethernet0/0
  ip address dhcp
  no shutdown
 exit
@@ -311,55 +309,56 @@ enable
 configure terminal
 hostname ROUTER-EDA
 
-# ALUNOS ED.A
+# ALUNOS ED.A (Rede 10.10.0.0 /25)
 # Permitido: DHCP, HTTP Institucional, Impressoras Ed.A, Inter-edifícios (Ed.B) e Internet.
 ip access-list extended ACL-ALUNOS-EDA
- permit udp any host 10.30.0.2 eq 67
+ permit udp any host 10.30.0.1 eq 67
  permit tcp 10.10.0.0 0.0.0.127 host 10.30.0.3 eq 80
- permit ip 10.10.0.0 0.0.0.127 10.10.1.0 0.0.0.15
+ permit ip 10.10.0.0 0.0.0.127 10.10.5.0 0.0.0.15
  permit ip 10.10.0.0 0.0.0.127 10.20.0.0 0.0.15.255
  deny ip 10.10.0.0 0.0.0.127 10.0.0.0 0.255.255.255  # Bloqueia o resto do tráfego interno
  permit ip 10.10.0.0 0.0.0.127 any                   # Permite Internet
  
-# PROFESSORES ED.A
+# PROFESSORES ED.A (Rede 10.10.1.0 /26)
 # Permitido: DHCP, HTTP Inst. e Interno, Impressoras Ed.A, Inter-edifícios (Ed.B) e Internet.
 ip access-list extended ACL-PROF-EDA
- permit udp any host 10.30.0.2 eq 67
- permit tcp 10.10.0.128 0.0.0.63 host 10.30.0.3 eq 80
- permit tcp 10.10.0.128 0.0.0.63 host 10.30.0.4 eq 80
- permit ip 10.10.0.128 0.0.0.63 10.10.1.0 0.0.0.15
- permit ip 10.10.0.128 0.0.0.63 10.20.0.0 0.0.15.255
- deny ip 10.10.0.128 0.0.0.63 10.0.0.0 0.255.255.255 # Bloqueia o resto do tráfego interno
- permit ip 10.10.0.128 0.0.0.63 any                  # Permite Internet
+ permit udp any host 10.30.0.1 eq 67
+ permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.3 eq 80
+ permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.4 eq 80
+ permit ip 10.10.1.0 0.0.0.63 10.10.5.0 0.0.0.15
+ permit ip 10.10.1.0 0.0.0.63 10.20.0.0 0.0.15.255
+ deny ip 10.10.1.0 0.0.0.63 10.0.0.0 0.255.255.255 # Bloqueia o resto do tráfego interno
+ permit ip 10.10.1.0 0.0.0.63 any                  # Permite Internet
 
-# INFORMÁTICA ED.A
+# INFORMÁTICA ED.A (Rede 10.10.2.0 /29)
 # Permitido: Acesso total a tudo (Sem restrições).
 ip access-list extended ACL-INFO-EDA
- permit ip 10.10.0.192 0.0.0.15 any
+ permit ip 10.10.2.0 0.0.0.7 any
 
-# TELEFONES ED.A
+# TELEFONES ED.A (Rede 10.10.4.0 /27)
 # Permitido: DHCP e Inter-edifícios (Ed.B) apenas.
 ip access-list extended ACL-TELEFONES-EDA
- permit udp any host 10.30.0.2 eq 67
- permit ip 10.10.0.224 0.0.0.31 10.20.0.0 0.0.15.255
+ permit udp any host 10.30.0.1 eq 67
+ permit ip 10.10.4.0 0.0.0.31 10.20.0.0 0.0.15.255
  deny ip any any
 
-# IMPRESSORAS ED.A
+# IMPRESSORAS ED.A (Rede 10.10.5.0 /28)
 # Permitido: DHCP apenas.
 ip access-list extended ACL-IMPRESSORAS-EDA
- permit udp any host 10.30.0.2 eq 67
+ permit udp any host 10.30.0.1 eq 67
  deny ip any any
 
-# Aplicação nas sub interfaces do router Ed.A, ver se baetm certo com as do Romeu antes de fazer
-interface GigabitEthernet0/0.10
+# Aplicação nas sub-interfaces do router Ed.A 
+# (NOTA PARA A DEFESA: Confirmar com o Romeu se as portas são e0/0 e os IDs das VLANs batem certo#)
+interface Ethernet0/0.10
  ip access-group ACL-ALUNOS-EDA in
-interface GigabitEthernet0/0.20
+interface Ethernet0/0.20
  ip access-group ACL-PROF-EDA in
-interface GigabitEthernet0/0.50
+interface Ethernet0/0.50
  ip access-group ACL-INFO-EDA in
-interface GigabitEthernet0/0.70
+interface Ethernet0/0.70
  ip access-group ACL-TELEFONES-EDA in
-interface GigabitEthernet0/0.80
+interface Ethernet0/0.80
  ip access-group ACL-IMPRESSORAS-EDA in
 exit
 
@@ -368,25 +367,37 @@ exit
 =================================================================================================================
 =================================================================================================================
 
+#ROUTER-DC
+
 enable
 configure terminal
 
 ip access-list extended ACL-WAN-IN
- #Permitir tráfego das redes Ed.A e Ed.B a aceder ao Datacenter 
- permit ip 10.10.0.0 0.0.15.255 10.30.0.0 0.0.0.255
- permit ip 10.20.0.0 0.0.15.255 10.30.0.0 0.0.0.255
+ #PERMITIR DHCP (Os routers Ed.A e Ed.B enviam pedidos UDP 67 via ip helper-address)
+ permit udp any host 10.30.0.1 eq 67
  
- #Permitir que a Internet (qualquer IP) aceda APENAS ao HTTP Institucional
+ #PERMITIR PING (ICMP) PARA TESTES DO PROJETO 
+ permit icmp 10.10.0.0 0.0.15.255 10.30.0.0 0.0.0.7 echo
+ permit icmp 10.20.0.0 0.0.15.255 10.30.0.0 0.0.0.7 echo
+ 
+ #HTTP INSTITUCIONAL (.3) -> Aberto a toda a Universidade e Internet (TCP 80)
  permit tcp any host 10.30.0.3 eq 80
  
- #Bloquear qualquer outra tentativa de acesso de fora para o Datacenter
+ #HTTP INTERNO (.4) -> Restrito a Professores (A e B) e Académicos (B)
+ permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.4 eq 80  # Professores Ed.A
+ permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.4 eq 80  # Professores Ed.B
+ permit tcp 10.20.3.0 0.0.0.31 host 10.30.0.4 eq 80  # Académicos Ed.B
+ 
+ #FTP (.5) - Restrito à Informática Ed.A (Portas TCP 21 Control e 20 Data)
+ permit tcp 10.10.2.0 0.0.0.7 host 10.30.0.5 eq 21
+ permit tcp 10.10.2.0 0.0.0.7 host 10.30.0.5 eq 20
+ 
+ #BLOQUEAR RESTO COM LOG DE AUDITORIA
  deny ip any any log
 
-#Aplicação na interface WAN (que liga ao Router-Central)
-interface GigabitEthernet0/1
+interface Ethernet0/0
  ip access-group ACL-WAN-IN in
 exit
-
 
 =================================================================================================================
 =================================================================================================================
@@ -397,3 +408,14 @@ Problemas possíveis
 
 Problema 1: Ip helper-address
 Romeu e Ricardo esquecerem-se de meter nos routers do edificio A e B 
+
+Problema 2: Prevenção de Routing Loops na Sumarização (Black Hole Route)
+O Romeu e o Ricardo precisam de colocar estas rotas nos respetivos routers para 
+descartar tráfego destinado a IPs não utilizados dentro do bloco /20, 
+evitando que o tráfego volte para trás pela rota default.
+
+No Router-Edifício A (Romeu):
+ip route 10.10.0.0 255.255.240.0 Null0
+
+No Router-Edifício B (Ricardo):
+ip route 10.20.0.0 255.255.240.0 Null0
