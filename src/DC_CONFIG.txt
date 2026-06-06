@@ -34,6 +34,8 @@ configure terminal
 hostname SW-DC
 no ip domain-lookup
 
+vlan 60
+ name Convidados
 vlan 100
  name Servidores-DC
 vlan 90
@@ -44,8 +46,8 @@ exit
 
 interface Ethernet0/0
  switchport mode trunk
- switchport trunk native vlan 999
- switchport trunk allowed vlan 90,100,999
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 60,90,100,999
 exit
 
 interface range Ethernet0/1 - 3
