@@ -60,7 +60,7 @@ exit
 
 enable
 configure terminal
-hostname ROUTER-DC
+hostname R-DC
 no ip domain-lookup
 
 interface Ethernet0/0
@@ -236,7 +236,7 @@ exit
 
 enable
 configure terminal
-hostname ROUTER-CENTRAL
+hostname R-C
 no ip domain-lookup
 
 #Interface para o Router-DC
@@ -280,7 +280,7 @@ ip route 0.0.0.0 0.0.0.0 10.99.0.6
 
 enable
 configure terminal
-hostname ROUTER-ISP
+hostname R-ISP
 no ip domain-lookup
 
 #Interface interna (virada para o Router-Central)
