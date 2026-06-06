@@ -1,0 +1,331 @@
+--- SW-BA1-Geral --- 
+enable
+configure terminal
+hostname SW-BA1-Geral
+no ip domain-lookup
+
+
+--- Paste do vlan_config.txt --- 
+
+--- link's e portas em trunk mode ---
+ conf t
+ interface range e0/0-3 , e3/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80,90,100
+ no shutdown
+
+
+--- link's e portas em access mode ---
+conf t 
+interface e1/0
+switchport mode access
+switchport access vlan 70
+// depois de ter routing estavel
+//switchport port-security maximum 1
+//switchport port-security mac-address sticky 
+//switchport port-security violation restrict
+spanning-tree portfast
+
+interface e1/1
+switchport mode access
+switchport access vlan 80
+// depois de ter routing estavel
+//switchport port-security maximum 1
+//switchport port-security mac-address sticky 
+//switchport port-security violation restrict
+spanning-tree portfast
+end
+
+wr
+
+
+--- SW-BA2-Geral --- 
+enable
+configure terminal
+hostname SW-BA2-Geral
+no ip domain-lookup
+
+
+--- Paste do vlan_config.txt --- 
+
+--- link's e portas em trunk mode ---
+ conf t
+ interface range e0/0-3 , e3/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80,90,100
+ no shutdown
+
+
+--- link's e portas em access mode ---
+conf t 
+interface 
+switchport mode access
+switchport access vlan 90
+// depois de ter routing estavel
+//switchport port-security maximum 1
+//switchport port-security mac-address sticky 
+//switchport port-security violation restrict
+spanning-tree portfast
+end
+
+wr
+
+
+--- SW-BA1-A1_Sul ---
+
+enable
+conf t
+hostname SW-BA1-A1_Sul
+no ip domain lookup
+
+vlan 10
+name Alunos
+vlan 20
+name Professores 
+vlan 60
+name Convidados
+vlan 70
+name Telefones
+vlan 999
+name ParkingLot
+
+--- links e portas trunks
+conf t
+ interface range e0/0-1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,60,70
+ no shutdown
+
+
+--- portas em mode access
+conf t
+interface e1/0
+switchport mode access
+switchport access vlan id
+no shutdown
+end
+wr
+
+--- SW-BA1-A1_Centro ---
+
+enable
+conf t
+hostname SW-BA1-A1_Centro
+no ip domain lookup
+
+vlan 10
+name Alunos
+vlan 20
+name Professores 
+vlan 60
+name Convidados
+vlan 70
+name Telefones
+vlan 999
+name ParkingLot
+
+--- links e portas trunks
+conf t
+ interface range e0/0-1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,60,70
+ no shutdown
+
+
+--- portas em mode access
+conf t
+interface e1/0
+switchport mode access
+switchport access vlan id
+no shutdown
+end
+wr
+
+
+--- SW-BA1-Norte ---
+
+enable
+conf t
+hostname SW-BA1-Norte
+no ip domain lookup
+
+vlan 10
+name Alunos
+vlan 20
+name Professores 
+vlan 60
+name Convidados
+vlan 70
+name Telefones
+vlan 999
+name ParkingLot
+
+--- links e portas trunks para os outros switches
+conf t
+ interface range e0/0-1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,60,70
+ no shutdown
+
+
+--- portas em mode access para dispostivos erminais (vpcs)
+conf t
+interface e1/0
+switchport mode access
+switchport access vlan id
+no shutdown
+end
+
+wr
+
+
+
+--- SW-BA2-A2 ---
+
+enable
+conf t
+hostname SW-BA2-A2
+no ip domain lookup
+
+vlan 10
+name Alunos
+vlan 20
+name Professores 
+vlan 60
+name Convidados
+vlan 70
+name Telefones
+vlan 999
+name ParkingLot
+
+--- links e portas trunks
+conf t
+ interface range e0/0-1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,60,70
+ no shutdown
+
+
+--- portas em mode access
+conf t
+interface e1/0
+switchport mode access
+switchport access vlan id
+no shutdown
+end 
+
+wr
+
+
+--- SW-BA2-A3 ---
+
+enable
+conf t
+hostname SW-BA2-A3
+no ip domain lookup
+
+vlan 10
+name Alunos
+vlan 20
+name Professores 
+vlan 60
+name Convidados
+vlan 70
+name Telefones
+vlan 999
+name ParkingLot
+
+--- links e portas trunks
+conf t
+ interface range e0/0-1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,60,70
+ no shutdown
+
+
+--- portas em mode access
+conf t
+interface e1/0
+switchport mode access
+switchport access vlan id
+no shutdown
+end 
+wr
+
+
+--- SW-BA2-DptInfo ---
+
+enable
+conf t
+hostname SW-BA2-DptInfo
+no ip domain lookup
+
+vlan 50
+name Informatica
+vlan 60
+name Convidados
+vlan 70
+name Telefones
+vlan 999
+name ParkingLot
+
+--- links e portas trunks
+conf t
+ interface range e0/0-1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 50,60,70
+ no shutdown
+
+
+--- portas em mode access
+conf t
+interface e1/0
+switchport mode access
+switchport access vlan id
+no shutdown
+end
+
+wr
+
+
+
+--- Router-Ed-A (on-a-stcik) ---
+enable
+conf t
+hostname R-Ed-A
+no ip domain-lookup
+
+--> router_to_SW_geral_1
+interface e0/1
+no shutdown
+
+interface e0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.0.1 255.255.255.128
+ no shutdown
+
+--> router_to_SW_geral_2
+interface e0/1
+no shutdown
+
+interface e0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.0.1 255.255.255.128
+ no shutdown
+
