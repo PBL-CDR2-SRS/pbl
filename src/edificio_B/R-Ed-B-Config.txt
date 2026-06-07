@@ -1,0 +1,52 @@
+enable
+configure terminal
+
+interface range e1/0 - 3 , e2/0 - 3
+ no ip address
+ no ip helper-address
+ shutdown
+exit
+
+interface e1/0
+ description VLAN 10 Alunos
+ ip address 10.20.0.1 255.255.255.0
+ ip helper-address 10.30.0.2
+ no shutdown
+interface e1/1
+ description VLAN 20 Professores
+ ip address 10.20.1.1 255.255.255.192
+ ip helper-address 10.30.0.2
+ no shutdown
+interface e1/2
+ description VLAN 30 Financeiros
+ ip address 10.20.2.1 255.255.255.240
+ ip helper-address 10.30.0.2
+ no shutdown
+interface e1/3
+ description VLAN 40 Academicos
+ ip address 10.20.3.1 255.255.255.224
+ ip helper-address 10.30.0.2
+ no shutdown
+interface e2/0
+ description VLAN 60 Convidados
+ ip address 10.20.4.1 255.255.255.240
+ ip helper-address 10.30.0.2
+ no shutdown
+interface e2/1
+ description VLAN 70 Telefones
+ ip address 10.20.5.1 255.255.255.192
+ ip helper-address 10.30.0.2
+ no shutdown
+interface e2/2
+ description VLAN 80 Impressoras
+ ip address 10.20.6.1 255.255.255.240
+ ip helper-address 10.30.0.2
+ no shutdown
+interface e2/3
+ description VLAN 90 Gestao
+ ip address 10.20.7.1 255.255.255.240
+ ip helper-address 10.30.0.2
+ no shutdown
+exit
+
+wr
