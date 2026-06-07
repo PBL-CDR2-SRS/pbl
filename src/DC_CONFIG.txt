@@ -316,7 +316,7 @@ hostname ROUTER-EDA
 # ALUNOS ED.A (Rede 10.10.0.0 /25)
 # Permitido: DHCP, HTTP Institucional, Impressoras Ed.A, Inter-edifícios (Ed.B) e Internet.
 ip access-list extended ACL-ALUNOS-EDA
- permit udp any host 255.255.255.255 eq 67
+ permit udp any any eq 67
  permit tcp 10.10.0.0 0.0.0.127 host 10.30.0.3 eq 80
  permit ip 10.10.0.0 0.0.0.127 10.10.5.0 0.0.0.15
  permit ip 10.10.0.0 0.0.0.127 10.20.0.0 0.0.15.255
@@ -326,7 +326,7 @@ ip access-list extended ACL-ALUNOS-EDA
 # PROFESSORES ED.A (Rede 10.10.1.0 /26)
 # Permitido: DHCP, HTTP Inst. e Interno, Impressoras Ed.A, Inter-edifícios (Ed.B) e Internet.
 ip access-list extended ACL-PROF-EDA
- permit udp any host 255.255.255.255 eq 67
+ permit udp any any eq 67
  permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.3 eq 80
  permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.4 eq 80
  permit ip 10.10.1.0 0.0.0.63 10.10.5.0 0.0.0.15
@@ -342,32 +342,32 @@ ip access-list extended ACL-INFO-EDA
 # TELEFONES ED.A (Rede 10.10.4.0 /27)
 # Permitido: DHCP e Inter-edifícios (Ed.B) apenas.
 ip access-list extended ACL-TELEFONES-EDA
- permit udp any host 255.255.255.255 eq 67
+ permit udp any any eq 67
  permit ip 10.10.4.0 0.0.0.31 10.20.0.0 0.0.15.255
  deny ip any any
 
 # IMPRESSORAS ED.A (Rede 10.10.5.0 /28)
 # Permitido: DHCP apenas.
 ip access-list extended ACL-IMPRESSORAS-EDA
- permit udp any host 255.255.255.255 eq 67
+ permit udp any any eq 67
  deny ip any any
 
 # CONVIDADOS ED.A (Rede 10.10.3.0 /28) - Adicionado da Auditoria
 # Permitido: DHCP e Internet.
 ip access-list extended ACL-CONVIDADOS-EDA
- permit udp any host 255.255.255.255 eq 67
+ permit udp any any eq 67
  deny ip 10.10.3.0 0.0.0.15 10.0.0.0 0.255.255.255 # Bloqueia tráfego interno
  permit ip 10.10.3.0 0.0.0.15 any                  # Permite Internet
 
 # GESTÃO ED.A (Rede 10.10.6.0 /28) - Adicionado da Auditoria
 # Permitido: Acesso inter-edifício e DHCP.
 ip access-list extended ACL-GESTAO-EDA
- permit udp any host 255.255.255.255 eq 67
+ permit udp any any eq 67
  permit ip 10.10.6.0 0.0.0.15 10.20.0.0 0.0.15.255
  deny ip any any
 
 # Aplicação nas sub-interfaces do router Ed.A 
-# ROMEU: VALIDA SE A PORTA TRUNK É A ETHERNET0/1. SE FOR OUTRA (EX: E0/2), MUDA EM BAIXO!
+# ROMEU: VALIDA SE A PORTA TRUNK É A ETHERNET0/1. SE FOR OUTRA (EX: E0/2), MUDA EM BAIXO#
 interface Ethernet0/1.10
  ip access-group ACL-ALUNOS-EDA in
 interface Ethernet0/1.20
@@ -395,33 +395,43 @@ enable
 configure terminal
 
 ip access-list extended ACL-WAN-IN
- #PERMITIR DHCP (Os routers Ed.A e Ed.B enviam pedidos UDP 67 via ip helper-address)
+
+ # 1. BLOQUEAR CONVIDADOS (Protege o DC /29 e a Gestão DC /28)
+ # A wildcard 0.0.1.255 abrange 10.30.0.0 até 10.30.1.255
+ deny ip 10.10.3.0 0.0.0.15 10.30.0.0 0.0.1.255   # Convidados Ed.A
+ deny ip 10.20.4.0 0.0.0.15 10.30.0.0 0.0.1.255   # Convidados Ed.B
+
+ # 2. SUPER ACESSO: Informática Ed.A (Apenas para o bloco /29 dos servidores)
+ permit ip 10.10.2.0 0.0.0.7 10.30.0.0 0.0.0.7
+
+ # 3. PERMITIR DHCP (Os routers Ed.A e Ed.B enviam pedidos UDP 67)
  permit udp any host 10.30.0.1 eq 67
  
- #PERMITIR PING (ICMP) PARA TESTES DO PROJETO 
+ # 4. PERMITIR PING (ICMP) PARA TESTES DO PROJETO 
  permit icmp 10.10.0.0 0.0.15.255 10.30.0.0 0.0.0.7 echo
  permit icmp 10.20.0.0 0.0.15.255 10.30.0.0 0.0.0.7 echo
  permit icmp any host 10.30.0.3 echo-reply
  permit icmp any host 10.30.0.4 echo-reply
  permit icmp any host 10.30.0.5 echo-reply
  
- #HTTP INSTITUCIONAL (.3) -> Aberto a toda a Universidade e Internet (TCP 80)
+ # 5. HTTP INSTITUCIONAL (.3) -> Aberto ao resto da Univ. e Internet
  permit tcp any host 10.30.0.3 eq 80
  
- #HTTP INTERNO (.4) -> Restrito a Professores (A e B) e Académicos (B)
+ # 6. HTTP INTERNO (.4) -> Restrito a Professores (A e B) e Académicos (B)
  permit tcp 10.10.1.0 0.0.0.63 host 10.30.0.4 eq 80  # Professores Ed.A
  permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.4 eq 80  # Professores Ed.B
  permit tcp 10.20.3.0 0.0.0.31 host 10.30.0.4 eq 80  # Académicos Ed.B
  
- #FTP (.5) - Restrito à Informática Ed.A (Porta TCP 21 Control)
- permit tcp 10.10.2.0 0.0.0.7 host 10.30.0.5 eq 21
- 
- #BLOQUEAR RESTO COM LOG DE AUDITORIA
+ # 7. BLOQUEAR RESTO COM LOG DE AUDITORIA
  deny ip any any log
+exit
 
 interface Ethernet0/0
  ip access-group ACL-WAN-IN in
 exit
+
+end
+write
 
 =================================================================================================================
 =================================================================================================================
