@@ -1,0 +1,38 @@
+enable
+configure terminal
+
+vlan 10,20,60,70,80,999
+exit
+
+interface range e0/0 - 1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ no shutdown
+exit
+
+interface e0/2
+ switchport mode access
+ switchport access vlan 10
+ no shutdown
+interface e0/3
+ switchport mode access
+ switchport access vlan 20
+ no shutdown
+interface e1/0
+ switchport mode access
+ switchport access vlan 70
+ no shutdown
+interface e1/1
+ switchport mode access
+ switchport access vlan 80
+ no shutdown
+exit
+
+interface range e1/2 - 3 , e2/0 - 3 , e3/0 - 3
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+end
+
+wr
