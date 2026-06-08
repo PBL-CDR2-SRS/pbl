@@ -366,10 +366,7 @@ ip access-list extended ACL-GESTAO-EDA
  permit ip 10.10.6.0 0.0.0.15 10.20.0.0 0.0.15.255
  deny ip any any
 
-! ============================================================
-! ROMEU — Colar ESTE BLOCO PRIMEIRO, antes das ACLs do Rodrigo
-! Corrige IPs das sub-interfaces E helper-address em simultâneo
-! ============================================================
+
 
 enable
 configure terminal
@@ -429,9 +426,10 @@ write
 
 #deu erro primeiro, tive de correr outra vez por causa de overlap
 
-! ============================================================
-! SÓ DEPOIS DISTO o Rodrigo aplica as ACLs:
-!
+===================================================================================
+===================================================================================
+
+
 configure terminal
 interface Ethernet0/1.10
 ip access-group ACL-ALUNOS-EDA in
@@ -450,7 +448,7 @@ ip access-group ACL-GESTAO-EDA in
 exit
 end
 write
-! ============================================================
+
 =================================================================================================================
 =================================================================================================================
 =================================================================================================================
@@ -463,11 +461,10 @@ configure terminal
 ip access-list extended ACL-WAN-IN
 
  # 1. BLOQUEAR CONVIDADOS (Protege o DC /29 e a Gestão DC /28)
- # A wildcard 0.0.1.255 abrange 10.30.0.0 até 10.30.1.255
  deny ip 10.10.3.0 0.0.0.15 10.30.0.0 0.0.1.255   # Convidados Ed.A
  deny ip 10.20.4.0 0.0.0.15 10.30.0.0 0.0.1.255   # Convidados Ed.B
 
- # 2. SUPER ACESSO: Informática Ed.A (Apenas para o bloco /29 dos servidores)
+ # 2. Informática Ed.A (Apenas para o bloco /29 dos servidores)
  permit ip 10.10.2.0 0.0.0.7 10.30.0.0 0.0.0.7
 
  # 3. PERMITIR DHCP (Os routers Ed.A e Ed.B enviam pedidos UDP 67)
