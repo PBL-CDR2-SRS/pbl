@@ -366,25 +366,91 @@ ip access-list extended ACL-GESTAO-EDA
  permit ip 10.10.6.0 0.0.0.15 10.20.0.0 0.0.15.255
  deny ip any any
 
-# Aplicação nas sub-interfaces do router Ed.A 
-# ROMEU: VALIDA SE A PORTA TRUNK É A ETHERNET0/1. SE FOR OUTRA (EX: E0/2), MUDA EM BAIXO#
+! ============================================================
+! ROMEU — Colar ESTE BLOCO PRIMEIRO, antes das ACLs do Rodrigo
+! Corrige IPs das sub-interfaces E helper-address em simultâneo
+! ============================================================
+
+enable
+configure terminal
+
+! VLAN 10 Alunos — IP correto, so corrigir o helper-address
 interface Ethernet0/1.10
- ip access-group ACL-ALUNOS-EDA in
+ no ip helper-address 10.99.0.2
+ ip helper-address 10.30.0.1
+
+! VLAN 20 Professores — IP errado: era 10.10.0.129/26
 interface Ethernet0/1.20
- ip access-group ACL-PROF-EDA in
+ ip address 10.10.1.1 255.255.255.192
+ no ip helper-address 10.99.0.2
+ ip helper-address 10.30.0.1
+
+! VLAN 50 Informatica — IP errado: era 10.10.0.193/28 (mask tbm errada)
 interface Ethernet0/1.50
- ip access-group ACL-INFO-EDA in
+ ip address 10.10.2.1 255.255.255.248
+ no ip helper-address 10.99.0.2
+ ip helper-address 10.30.0.1
+
+! VLAN 60 Convidados (native) — IP errado: era 10.10.0.209/28
 interface Ethernet0/1.60
- ip access-group ACL-CONVIDADOS-EDA in
+ ip address 10.10.3.1 255.255.255.240
+ no ip helper-address 10.99.0.2
+ ip helper-address 10.30.0.1
+
+! VLAN 70 Telefones — IP errado: era 10.10.0.225/27
 interface Ethernet0/1.70
- ip access-group ACL-TELEFONES-EDA in
+ ip address 10.10.4.1 255.255.255.224
+ no ip helper-address 10.99.0.2
+ ip helper-address 10.30.0.1
+
+! VLAN 80 Impressoras — IP errado: era 10.10.1.1/28
 interface Ethernet0/1.80
- ip access-group ACL-IMPRESSORAS-EDA in
+ ip address 10.10.5.1 255.255.255.240
+ no ip helper-address 10.99.0.2
+ ip helper-address 10.30.0.1
+
+! VLAN 90 Gestao — IP errado: era 10.10.1.17/28
 interface Ethernet0/1.90
- ip access-group ACL-GESTAO-EDA in
+ ip address 10.10.6.1 255.255.255.240
+ no ip helper-address 10.99.0.2
+ ip helper-address 10.30.0.1
+
 exit
+end
+write
 
 
+configure terminal
+interface Ethernet0/1.20
+ ip address 10.10.1.1 255.255.255.192
+exit
+end
+write
+
+#deu erro primeiro, tive de correr outra vez por causa de overlap
+
+! ============================================================
+! SÓ DEPOIS DISTO o Rodrigo aplica as ACLs:
+!
+configure terminal
+interface Ethernet0/1.10
+ip access-group ACL-ALUNOS-EDA in
+interface Ethernet0/1.20
+ip access-group ACL-PROF-EDA in
+interface Ethernet0/1.50
+ip access-group ACL-INFO-EDA in
+interface Ethernet0/1.60
+ip access-group ACL-CONVIDADOS-EDA in
+interface Ethernet0/1.70
+ip access-group ACL-TELEFONES-EDA in
+interface Ethernet0/1.80
+ip access-group ACL-IMPRESSORAS-EDA in
+interface Ethernet0/1.90
+ip access-group ACL-GESTAO-EDA in
+exit
+end
+write
+! ============================================================
 =================================================================================================================
 =================================================================================================================
 =================================================================================================================
