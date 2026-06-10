@@ -1,0 +1,40 @@
+ip access-list extended ACL-FINANCEIROS-Ed_B
+permit udp any host 10.30.0.2 eq 67
+permit tcp 10.20.1.64 0.0.0.31 host 10.30.0.3 eq 80
+permit ip 10.20.1.64 0.0.0.31 10.20.1.176 0.0.0.15
+deny ip 10.20.1.64 0.0.0.31 10.0.0.0 0.255.255.255
+permit ip 10.20.1.64 0.0.0.31 any
+
+
+ip access-list extended ACL-ACADEMICOS-EDB
+permit udp any host 10.30.0.2 eq 67
+permit tcp 10.20.1.96 0.0.0.31 host 10.30.0.3 eq 80
+permit tcp 10.20.1.96 0.0.0.31 host 10.30.0.4 eq 80
+permit ip 10.20.1.96 0.0.0.31 10.20.1.176 0.0.0.15
+deny ip 10.20.1.96 0.0.0.31 10.0.0.0 0.255.255.255
+permit ip 10.20.1.96 0.0.0.31 any
+
+
+ip access-list extended ACL-CONVIDADOS-EDB
+deny ip 10.20.1.128 0.0.0.15 10.0.0.0 0.255.255.255
+permit ip 10.20.1.128 0.0.0.15 any
+
+
+ip access-list extended ACL-PROF-EDB
+permit udp any host 10.30.0.2 eq 67
+permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.3 eq 80
+permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.4 eq 80
+permit ip 10.20.1.0 0.0.0.63 10.20.1.176 0.0.0.15
+permit ip 10.20.1.0 0.0.0.63 10.10.0.0 0.0.15.255
+deny ip 10.20.1.0 0.0.0.63 10.0.0.0 0.255.255.255
+permit ip 10.20.1.0 0.0.0.63 any
+
+
+ip access-list extended ACL-GESTAO-EDB
+permit udp any host 10.30.0.2 eq 67
+permit ip 10.20.1.192 0.0.0.15 10.10.0.0 0.0.15.255
+deny ip any any
+
+=== aplicar estas ACL nas respetivas portas com os cmd seguinrtes ===
+    interface onde aplicar a ACL
+    ip access-group id da ACL in ou out 
