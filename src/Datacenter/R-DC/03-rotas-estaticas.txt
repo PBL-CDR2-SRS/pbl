@@ -1,0 +1,8 @@
+! =====================================================================
+! R-DC    03 · Rotas estaticas
+! Tudo o que nao e local sai pelo R-Central (10.99.0.2)
+! =====================================================================
+
+ip route 10.10.0.0 255.255.240.0 10.99.0.2    ! Edificio A (via R-Central)
+ip route 10.20.0.0 255.255.240.0 10.99.0.2    ! Edificio B (via R-Central)
+ip route 0.0.0.0 0.0.0.0 10.99.0.2            ! Default saida para a Internet

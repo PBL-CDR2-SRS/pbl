@@ -1,0 +1,11 @@
+! =====================================================================
+! R-DC  —  07 · Pool DHCP da Gestao do Datacenter  (VLAN 90)
+! 16.o pool (7 Ed.A + 8 Ed.B + 1 DC). Servidores (VLAN 100) sao IP fixo.
+! =====================================================================
+
+! Gestao DC (~4 hosts)
+ip dhcp pool GESTAO-DC
+ network 10.30.0.0 255.255.255.248
+ default-router 10.30.0.1
+ dns-server 8.8.8.8
+exit

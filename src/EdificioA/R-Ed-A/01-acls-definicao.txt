@@ -1,0 +1,68 @@
+! =====================================================================
+! R-Ed-A  —  01 · Definicao das ACLs (Rodrigo)
+! Aplicadas inbound nas sub-interfaces do R-Ed-A (ver 02-acls-aplicar.txt).
+! Servidores DC: HTTP institucional 10.30.0.10 · HTTP interno 10.30.0.11
+! =====================================================================
+
+enable
+configure terminal
+
+! ALUNOS ED.A (10.10.0.0/25)
+! Permitido: DHCP, HTTP institucional, Impressoras Ed.A, inter-edificios (Ed.B) e Internet.
+ip access-list extended ACL-ALUNOS-EDA
+ permit udp any any eq 67
+ permit tcp 10.10.0.0 0.0.0.127 host 10.30.0.10 eq 80
+ permit ip 10.10.0.0 0.0.0.127 10.10.0.192 0.0.0.15      ! Impressoras Ed.A
+ permit ip 10.10.0.0 0.0.0.127 10.20.0.0 0.0.15.255      ! Inter-edificios (Ed.B)
+ deny ip 10.10.0.0 0.0.0.127 10.0.0.0 0.255.255.255      ! Bloqueia resto interno
+ permit ip 10.10.0.0 0.0.0.127 any                       ! Internet
+exit
+
+! PROFESSORES ED.A (10.10.0.128/28)
+! Permitido: DHCP, HTTP institucional + interno, Impressoras Ed.A, inter-edificios e Internet.
+ip access-list extended ACL-PROF-EDA
+ permit udp any any eq 67
+ permit tcp 10.10.0.128 0.0.0.15 host 10.30.0.10 eq 80
+ permit tcp 10.10.0.128 0.0.0.15 host 10.30.0.11 eq 80
+ permit ip 10.10.0.128 0.0.0.15 10.10.0.192 0.0.0.15     ! Impressoras Ed.A
+ permit ip 10.10.0.128 0.0.0.15 10.20.0.0 0.0.15.255     ! Inter-edificios (Ed.B)
+ deny ip 10.10.0.128 0.0.0.15 10.0.0.0 0.255.255.255
+ permit ip 10.10.0.128 0.0.0.15 any
+exit
+
+! INFORMATICA ED.A (10.10.0.144/29)
+! Permitido: acesso total (sem restricoes).
+ip access-list extended ACL-INFO-EDA
+ permit ip 10.10.0.144 0.0.0.7 any
+exit
+
+! TELEFONES ED.A (10.10.0.160/27)
+! Permitido: DHCP e inter-edificios (Ed.B) apenas.
+ip access-list extended ACL-TELEFONES-EDA
+ permit udp any any eq 67
+ permit ip 10.10.0.160 0.0.0.31 10.20.0.0 0.0.15.255
+ deny ip any any
+exit
+
+! IMPRESSORAS ED.A (10.10.0.192/28)
+! Permitido: DHCP apenas.
+ip access-list extended ACL-IMPRESSORAS-EDA
+ permit udp any any eq 67
+ deny ip any any
+exit
+
+! CONVIDADOS ED.A (10.10.0.152/29)
+! Permitido: DHCP e Internet.
+ip access-list extended ACL-CONVIDADOS-EDA
+ permit udp any any eq 67
+ deny ip 10.10.0.152 0.0.0.7 10.0.0.0 0.255.255.255      ! Bloqueia interno
+ permit ip 10.10.0.152 0.0.0.7 any                       ! Internet
+exit
+
+! GESTAO ED.A (10.10.0.208/28)
+! Permitido: DHCP e inter-edificios (Ed.B).
+ip access-list extended ACL-GESTAO-EDA
+ permit udp any any eq 67
+ permit ip 10.10.0.208 0.0.0.15 10.20.0.0 0.0.15.255
+ deny ip any any
+exit

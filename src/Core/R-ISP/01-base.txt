@@ -1,0 +1,9 @@
+! =====================================================================
+! R-ISP  —  Router de saida para a Internet (no GNS3: R-SP)
+! 01 · Base
+! =====================================================================
+
+enable
+configure terminal
+hostname R-ISP
+no ip domain-lookup

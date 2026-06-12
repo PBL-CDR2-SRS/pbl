@@ -1,0 +1,29 @@
+! =====================================================================
+! SW-BA1  —  Port Security nas portas de acesso (SRS — tarefa do Rodrigo)
+! 1 MAC sticky por porta, violacao = shutdown.
+! =====================================================================
+! NOTA: estes switches de acesso BA1 sao do Romeu (SW-BA1-A1_Norte,
+! _Centro, _Sul, etc.). Aplicar SO nas portas de ACESSO (com PCs/
+! telefones) — NUNCA nos trunks/uplinks. Ajustar o range abaixo para
+! as portas access reais de cada switch.
+! =====================================================================
+
+enable
+configure terminal
+
+! Exemplo (ajustar o range conforme as portas access de cada switch BA1)
+interface range Ethernet0/1 - 2
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+exit
+
+end
+write
+
+! ---------------------------------------------------------------------
+! Verificar:  show port-security  |  show port-security address
+! Testar com um PC de MAC inesperado -> porta err-disabled.
+! ---------------------------------------------------------------------

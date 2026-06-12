@@ -1,0 +1,39 @@
+! =====================================================================
+! SW-DC  —  02 · Port Security (SRS)
+! Servidores (Eth0/1-3) + Parking Lot: 1 MAC sticky por porta,
+! violacao = shutdown. Aplicar DEPOIS de 01-vlans-trunk.txt.
+! =====================================================================
+
+enable
+configure terminal
+
+! Portas dos servidores (VLAN 100)
+interface range Ethernet0/1 - 3
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+exit
+
+! Portas do Parking Lot (VLAN 999): port-security como defesa extra, caso
+! alguma porta seja reativada (ficam em shutdown no 01-vlans-trunk.txt).
+! (ajustar o range as portas reais do switch no GNS3)
+interface range Ethernet1/0 - 3 , Ethernet2/0 - 3 , Ethernet3/0 - 3
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+exit
+
+end
+write
+
+! ---------------------------------------------------------------------
+! TESTE: ligar um VPCS com MAC diferente numa destas portas -> a porta
+! deve ir para err-disabled. Verificar com:
+!   show port-security
+!   show port-security address
+!   show port-security interface Ethernet0/1
+! Repor uma porta: shutdown / no shutdown na interface.
+! ---------------------------------------------------------------------

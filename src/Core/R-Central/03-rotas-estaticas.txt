@@ -1,0 +1,11 @@
+! =====================================================================
+! R-Central (R-C)  —  03 · Rotas estaticas
+! =====================================================================
+
+! Rotas internas
+ip route 10.30.0.0 255.255.255.0 10.99.0.1     ! Datacenter (bloco /24) via R-DC
+ip route 10.10.0.0 255.255.240.0 10.99.0.9     ! Edificio A via R-Ed-A
+ip route 10.20.0.0 255.255.240.0 10.99.0.13    ! Edificio B via R-Ed-B
+
+! Rota default (tudo o que for Internet vai para o R-ISP)
+ip route 0.0.0.0 0.0.0.0 10.99.0.6

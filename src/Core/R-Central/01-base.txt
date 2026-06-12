@@ -1,0 +1,9 @@
+! =====================================================================
+! R-Central (R-C)  —  Router central / nucleo de routing
+! 01 · Base
+! =====================================================================
+
+enable
+configure terminal
+hostname R-C
+no ip domain-lookup

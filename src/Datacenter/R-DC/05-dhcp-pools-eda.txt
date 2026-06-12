@@ -1,0 +1,52 @@
+! =====================================================================
+! R-DC  —  05 · Pools DHCP do Edificio A  (10.10.0.0/20)
+! =====================================================================
+
+! Alunos Ed.A (~80 hosts)
+ip dhcp pool ALUNOS-EDA
+ network 10.10.0.0 255.255.255.128
+ default-router 10.10.0.1
+ dns-server 8.8.8.8
+exit
+
+! Professores Ed.A (~6 hosts)
+ip dhcp pool PROFESSORES-EDA
+ network 10.10.0.128 255.255.255.240
+ default-router 10.10.0.129
+ dns-server 8.8.8.8
+exit
+
+! Informatica Ed.A (~5 hosts)
+ip dhcp pool INFORMATICA-EDA
+ network 10.10.0.144 255.255.255.248
+ default-router 10.10.0.145
+ dns-server 8.8.8.8
+exit
+
+! Convidados Ed.A (~1 host)
+ip dhcp pool CONVIDADOS-EDA
+ network 10.10.0.152 255.255.255.248
+ default-router 10.10.0.153
+ dns-server 8.8.8.8
+exit
+
+! Telefones Ed.A (~15 hosts)
+ip dhcp pool TELEFONES-EDA
+ network 10.10.0.160 255.255.255.224
+ default-router 10.10.0.161
+ dns-server 8.8.8.8
+exit
+
+! Impressoras Ed.A (~8 hosts)
+ip dhcp pool IMPRESSORAS-EDA
+ network 10.10.0.192 255.255.255.240
+ default-router 10.10.0.193
+ dns-server 8.8.8.8
+exit
+
+! Gestao Ed.A (~6 hosts)
+ip dhcp pool GESTAO-EDA
+ network 10.10.0.208 255.255.255.240
+ default-router 10.10.0.209
+ dns-server 8.8.8.8
+exit

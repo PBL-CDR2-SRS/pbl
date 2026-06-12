@@ -1,0 +1,16 @@
+! =====================================================================
+! R-ISP  —  02 · Interfaces
+! NOTA: NAT/PAT (ip nat inside/outside) fica no ficheiro 04-nat-pat.txt.
+! =====================================================================
+
+! Eth0/1 — interna, para o R-Central (10.99.0.4/30)
+interface Ethernet0/1
+ ip address 10.99.0.6 255.255.255.252
+ no shutdown
+exit
+
+! Eth0/0 — externa, virada para a Internet (IP por DHCP)
+interface Ethernet0/0
+ ip address dhcp
+ no shutdown
+exit

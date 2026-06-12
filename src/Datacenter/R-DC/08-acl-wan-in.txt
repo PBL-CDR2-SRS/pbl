@@ -1,0 +1,40 @@
+! =====================================================================
+! R-DC  -  08 - ACL-WAN-IN  (aplicada inbound no WAN = Eth0/3)
+! Protege o Datacenter (10.30.0.0/24): Gestao DC /29 + Servidores DC /29.
+! So passam os servicos do enunciado (3.5). ICMP/ping NAO e servico listado
+! -> e bloqueado pelo "deny ip any any" (excepto Informatica, acesso total).
+! Aplicar SO NO FIM, depois de testar a conetividade com a ACL desaplicada.
+! =====================================================================
+
+ip access-list extended ACL-WAN-IN
+
+ ! 1. BLOQUEAR CONVIDADOS (protege todo o bloco DC -> 10.30.0.0/28)
+ deny ip 10.10.0.152 0.0.0.7 10.30.0.0 0.0.0.15    ! Convidados Ed.A
+ deny ip 10.20.1.128 0.0.0.7 10.30.0.0 0.0.0.15    ! Convidados Ed.B
+
+ ! 2. INFORMATICA Ed.A -> acesso total ao bloco dos servidores (/29)
+ !    (cobre FTP .12, que e exclusivo da Informatica, e tudo o resto)
+ permit ip 10.10.0.144 0.0.0.7 10.30.0.8 0.0.0.7
+
+ ! 3. DHCP (os routers Ed.A e Ed.B reencaminham pedidos UDP 67 para o R-DC)
+ permit udp any host 10.30.0.9 eq 67
+
+ ! 4. HTTP INSTITUCIONAL (.10) -> aberto a toda a Universidade e Internet
+ permit tcp any host 10.30.0.10 eq 80
+
+ ! 5. HTTP INTERNO (.11) -> Professores (A e B) e Academicos (B)
+ permit tcp 10.10.0.128 0.0.0.15 host 10.30.0.11 eq 80   ! Professores Ed.A
+ permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.11 eq 80     ! Professores Ed.B
+ permit tcp 10.20.1.96 0.0.0.31 host 10.30.0.11 eq 80    ! Academicos Ed.B
+
+ ! 6. BLOQUEAR O RESTO (inclui ping/ICMP nao identificado) COM LOG
+ deny ip any any log
+exit
+
+! Aplicar a ACL na interface WAN (Eth0/3, sentido entrada) -- SO NO FIM
+interface Ethernet0/3
+ ip access-group ACL-WAN-IN in
+exit
+
+end
+write

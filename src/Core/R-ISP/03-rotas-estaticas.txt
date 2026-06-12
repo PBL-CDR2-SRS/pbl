@@ -1,0 +1,9 @@
+! =====================================================================
+! R-ISP  —  03 · Rotas estaticas
+! Rotas de regresso para a rede da Universidade (tudo via R-Central .5)
+! =====================================================================
+
+ip route 10.10.0.0 255.255.240.0 10.99.0.5    ! Edificio A
+ip route 10.20.0.0 255.255.240.0 10.99.0.5    ! Edificio B
+ip route 10.30.0.0 255.255.255.0 10.99.0.5    ! Datacenter (bloco /24)
+ip route 10.99.0.0 255.255.255.0 10.99.0.5    ! Links WAN internos (entre routers)

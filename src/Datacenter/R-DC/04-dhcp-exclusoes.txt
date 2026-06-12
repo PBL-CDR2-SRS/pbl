@@ -1,0 +1,27 @@
+! =====================================================================
+! R-DC  —  04 · Exclusoes DHCP
+! Exclui o gateway (1.o IP util) de cada sub-rede antes dos pools.
+! =====================================================================
+
+! --- Edificio A ---
+ip dhcp excluded-address 10.10.0.1      ! Alunos Ed.A      (gw)
+ip dhcp excluded-address 10.10.0.129    ! Professores Ed.A (gw)
+ip dhcp excluded-address 10.10.0.145    ! Informatica Ed.A (gw)
+ip dhcp excluded-address 10.10.0.153    ! Convidados Ed.A  (gw)
+ip dhcp excluded-address 10.10.0.161    ! Telefones Ed.A   (gw)
+ip dhcp excluded-address 10.10.0.193    ! Impressoras Ed.A (gw)
+ip dhcp excluded-address 10.10.0.209    ! Gestao Ed.A      (gw)
+
+! --- Edificio B ---
+ip dhcp excluded-address 10.20.0.1      ! Alunos Ed.B      (gw)
+ip dhcp excluded-address 10.20.1.1      ! Professores Ed.B (gw)
+ip dhcp excluded-address 10.20.1.65     ! Financeiros Ed.B (gw)
+ip dhcp excluded-address 10.20.1.97     ! Academicos Ed.B  (gw)
+ip dhcp excluded-address 10.20.1.129    ! Convidados Ed.B  (gw)
+ip dhcp excluded-address 10.20.1.161    ! Telefones Ed.B   (gw)
+ip dhcp excluded-address 10.20.1.193    ! Impressoras Ed.B (gw)
+ip dhcp excluded-address 10.20.1.225    ! Gestao Ed.B      (gw)
+
+! --- Datacenter ---
+ip dhcp excluded-address 10.30.0.1      ! Gestao DC        (gw / R-DC)
+ip dhcp excluded-address 10.30.0.2      ! SW-DC management (SVI estatico)

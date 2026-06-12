@@ -1,0 +1,64 @@
+! =====================================================================
+! R-Ed-A  —  00 · REFERENCIA das sub-interfaces (router-on-a-stick)
+! =====================================================================
+! ATENCAO: este router e do Romeu. Este ficheiro e so REFERENCIA com os
+! IPs corretos (plano novo) + helper-address, para a aplicacao das ACLs
+! do Rodrigo bater certo. Confirmar com o Romeu se as sub-interfaces sao
+! e0/0.X ou e0/1.X (aqui assume-se Ethernet0/1.X, como estava no config
+! antigo). O helper-address aponta para o R-DC = 10.30.0.9.
+! =====================================================================
+
+enable
+configure terminal
+
+! VLAN 10 Alunos        — 10.10.0.0/25
+interface Ethernet0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.0.1 255.255.255.128
+ ip helper-address 10.30.0.9
+exit
+
+! VLAN 20 Professores   — 10.10.0.128/28
+interface Ethernet0/1.20
+ encapsulation dot1Q 20
+ ip address 10.10.0.129 255.255.255.240
+ ip helper-address 10.30.0.9
+exit
+
+! VLAN 50 Informatica   — 10.10.0.144/29
+interface Ethernet0/1.50
+ encapsulation dot1Q 50
+ ip address 10.10.0.145 255.255.255.248
+ ip helper-address 10.30.0.9
+exit
+
+! VLAN 60 Convidados (native) — 10.10.0.152/29
+interface Ethernet0/1.60
+ encapsulation dot1Q 60 native
+ ip address 10.10.0.153 255.255.255.248
+ ip helper-address 10.30.0.9
+exit
+
+! VLAN 70 Telefones     — 10.10.0.160/27
+interface Ethernet0/1.70
+ encapsulation dot1Q 70
+ ip address 10.10.0.161 255.255.255.224
+ ip helper-address 10.30.0.9
+exit
+
+! VLAN 80 Impressoras   — 10.10.0.192/28
+interface Ethernet0/1.80
+ encapsulation dot1Q 80
+ ip address 10.10.0.193 255.255.255.240
+ ip helper-address 10.30.0.9
+exit
+
+! VLAN 90 Gestao        — 10.10.0.208/28
+interface Ethernet0/1.90
+ encapsulation dot1Q 90
+ ip address 10.10.0.209 255.255.255.240
+ ip helper-address 10.30.0.9
+exit
+
+end
+write

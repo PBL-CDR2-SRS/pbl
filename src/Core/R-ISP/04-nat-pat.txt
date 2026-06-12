@@ -1,0 +1,41 @@
+! =====================================================================
+! R-ISP  —  04 · NAT / PAT  (Implementacao Avancada — Rodrigo)
+! PAT (overload) das redes internas + port-forward do website (TCP 80).
+! Inside  = Eth0/1 (para o R-Central / rede interna)
+! Outside = Eth0/0 (para a Internet, IP por DHCP)
+! =====================================================================
+
+enable
+configure terminal
+
+! 1. Marcar as interfaces inside / outside
+interface Ethernet0/1
+ ip nat inside
+exit
+interface Ethernet0/0
+ ip nat outside
+exit
+
+! 2. ACL com as redes internas a "natear"
+ip access-list standard NAT-INTERNAS
+ permit 10.10.0.0 0.0.15.255    ! Edificio A (/20)
+ permit 10.20.0.0 0.0.15.255    ! Edificio B (/20)
+ permit 10.30.0.0 0.0.0.255     ! Datacenter (/24)
+exit
+
+! 3. PAT (overload) — todas as redes internas saem com o IP da Eth0/0
+ip nat inside source list NAT-INTERNAS interface Ethernet0/0 overload
+
+! 4. Static NAT do website institucional (10.30.0.10) acessivel da Internet.
+!    Como a Eth0/0 tem IP por DHCP, faz-se port-forward do porto 80 na interface:
+ip nat inside source static tcp 10.30.0.10 80 interface Ethernet0/0 80
+!    ALTERNATIVA (se tiverem um IP publico fixo, NAT estatico 1:1):
+!    ip nat inside source static 10.30.0.10 <IP-PUBLICO>
+
+end
+write
+
+! ---------------------------------------------------------------------
+! TESTE: a partir do no "internet"/nuvem do GNS3 -> http ao IP publico da
+! Eth0/0 deve chegar ao 10.30.0.10. Verificar com: show ip nat translations
+! ---------------------------------------------------------------------

@@ -1,0 +1,59 @@
+! =====================================================================
+! R-DC  —  06 · Pools DHCP do Edificio B  (10.20.0.0/20)
+! =====================================================================
+
+! Alunos Ed.B (~155 hosts -> /24)
+ip dhcp pool ALUNOS-EDB
+ network 10.20.0.0 255.255.255.0
+ default-router 10.20.0.1
+ dns-server 8.8.8.8
+exit
+
+! Professores Ed.B (~31 hosts)
+ip dhcp pool PROFESSORES-EDB
+ network 10.20.1.0 255.255.255.192
+ default-router 10.20.1.1
+ dns-server 8.8.8.8
+exit
+
+! Financeiros Ed.B (~10 hosts)
+ip dhcp pool FINANCEIROS-EDB
+ network 10.20.1.64 255.255.255.240
+ default-router 10.20.1.65
+ dns-server 8.8.8.8
+exit
+
+! Academicos Ed.B (~16 hosts)
+ip dhcp pool ACADEMICOS-EDB
+ network 10.20.1.96 255.255.255.224
+ default-router 10.20.1.97
+ dns-server 8.8.8.8
+exit
+
+! Convidados Ed.B (~5 hosts)
+ip dhcp pool CONVIDADOS-EDB
+ network 10.20.1.128 255.255.255.248
+ default-router 10.20.1.129
+ dns-server 8.8.8.8
+exit
+
+! Telefones Ed.B (~25 hosts)
+ip dhcp pool TELEFONES-EDB
+ network 10.20.1.160 255.255.255.224
+ default-router 10.20.1.161
+ dns-server 8.8.8.8
+exit
+
+! Impressoras Ed.B (~7 hosts)
+ip dhcp pool IMPRESSORAS-EDB
+ network 10.20.1.192 255.255.255.240
+ default-router 10.20.1.193
+ dns-server 8.8.8.8
+exit
+
+! Gestao Ed.B (~12 hosts)
+ip dhcp pool GESTAO-EDB
+ network 10.20.1.224 255.255.255.224
+ default-router 10.20.1.225
+ dns-server 8.8.8.8
+exit

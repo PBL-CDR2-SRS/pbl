@@ -1,0 +1,9 @@
+# =====================================================================
+# Servidor HTTP Institucional  —  VLAN 100 (Servidores DC, 10.30.0.8/29)
+# Acessivel da Internet via NAT (configurar no R-ISP na Fase 3).
+# Descobrir a placa de rede primeiro com:  ip a
+# =====================================================================
+
+sudo ip addr add 10.30.0.10/29 dev ens3
+sudo ip link set ens3 up
+sudo ip route add default via 10.30.0.9

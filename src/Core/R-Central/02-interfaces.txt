@@ -1,0 +1,30 @@
+! =====================================================================
+! R-Central (R-C)  -  02 - Interfaces (links WAN /30)
+! Mapeamento fisico conforme a cablagem do GNS3:
+!   Eth0/0 -> R-Ed-B    |    Eth0/1 -> R-ISP
+!   Eth0/2 -> R-Ed-A    |    Eth0/3 -> R-DC
+! =====================================================================
+
+! Eth0/0 -> para o R-Ed-B   (10.99.0.12/30)
+interface Ethernet0/0
+ ip address 10.99.0.14 255.255.255.252
+ no shutdown
+exit
+
+! Eth0/1 -> para o R-ISP    (10.99.0.4/30)
+interface Ethernet0/1
+ ip address 10.99.0.5 255.255.255.252
+ no shutdown
+exit
+
+! Eth0/2 -> para o R-Ed-A   (10.99.0.8/30)
+interface Ethernet0/2
+ ip address 10.99.0.10 255.255.255.252
+ no shutdown
+exit
+
+! Eth0/3 -> para o R-DC     (10.99.0.0/30)
+interface Ethernet0/3
+ ip address 10.99.0.2 255.255.255.252
+ no shutdown
+exit

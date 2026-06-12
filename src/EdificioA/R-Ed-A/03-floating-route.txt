@@ -1,0 +1,28 @@
+! =====================================================================
+! R-Ed-A  -  03 - Floating Static Route para Ed.B  (IA - Rodrigo)
+! Redundancia L3: BACKUP Ed.A -> Ed.B pelo link direto Ed.A<->Ed.B
+! (10.99.0.16/30), AD=200. So entra se o caminho via R-Central cair.
+! Interface do link direto = Eth2/1 (conforme topologia GNS3).
+! NOTA: este router e do Romeu.
+! =====================================================================
+
+enable
+configure terminal
+
+! Interface do link direto Ed.A <-> Ed.B (10.99.0.16/30) -> R-Ed-A = .17
+interface Ethernet2/1
+ ip address 10.99.0.17 255.255.255.252
+ no shutdown
+exit
+
+! Rota PRIMARIA para Ed.B via R-Central (AD 1).
+! OBRIGATORIO: sem esta rota especifica /20, a de backup ganharia sempre
+! por longest-prefix-match e nunca "flutuaria". Se o config IE do Romeu
+! ja tiver esta rota, nao a repetir.
+ip route 10.20.0.0 255.255.240.0 10.99.0.10
+
+! Rota de BACKUP (floating) para Ed.B pelo link direto, AD=200
+ip route 10.20.0.0 255.255.240.0 10.99.0.18 200
+
+end
+write

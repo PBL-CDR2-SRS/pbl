@@ -1,0 +1,9 @@
+! =====================================================================
+! R-DC  —  Router do Datacenter
+! 01 · Base (hostname e definições gerais)
+! =====================================================================
+
+enable
+configure terminal
+hostname R-DC
+no ip domain-lookup
