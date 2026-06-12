@@ -1,0 +1,82 @@
+enable
+conf t
+
+interface e0/1
+description VLAN10-Alunos-EdB
+ip address 10.20.0.1 255.255.255.0
+ip helper-address 10.30.0.9
+no shutdown
+exit
+
+interface e0/2
+description VLAN20-Professores-EdB
+ip address 10.20.1.1 255.255.255.192
+ip helper-address 10.30.0.9
+no shutdown
+exit
+
+interface e0/3
+description VLAN70-Telefones-EdB
+ip address 10.20.1.161 255.255.255.224
+ip helper-address 10.30.0.9
+no shutdown
+exit
+
+interface e1/0
+ description VLAN90-Gestao-EdB
+ ip address 10.20.1.225 255.255.255.224
+ ip helper-address 10.30.0.9
+ no shutdown
+exit
+
+interface e1/1
+description VLAN30-Financeiros-EdB
+ip address 10.20.1.65 255.255.255.240
+ip helper-address 10.30.0.9
+no shutdown
+exit
+
+interface e1/2
+description VLAN40-Academicos-EdB
+ip address 10.20.1.97 255.255.255.224
+ip helper-address 10.30.0.9
+no shutdown
+exit
+
+interface e1/3
+description VLAN60-Convidados-EdB
+ip address 10.20.1.129 255.255.255.248
+ip helper-address 10.30.0.9
+no shutdown
+exit
+
+interface e2/0
+description VLAN80-Impressoras-EdB
+ip address 10.20.1.193 255.255.255.240
+ip helper-address 10.30.0.9
+no shutdown
+exit
+
+interface e0/0
+description WAN-para-R-Central
+ip address 10.99.0.13 255.255.255.252
+no shutdown
+exit
+
+interface e2/1
+description Backup-para-R-EdA
+ip address 10.99.0.17 255.255.255.252
+no shutdown
+exit
+
+! Rota default -> R-C como next-hop
+ip route 0.0.0.0 0.0.0.0 10.99.0.14
+
+! Rotas para o DC
+ip route 10.30.0.0 255.255.255.0 10.99.0.14
+
+! Rotas para EdA
+ip route 10.10.0.0 255.255.240.0 10.99.0.14
+
+end
+write memory

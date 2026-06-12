@@ -1,0 +1,59 @@
+enable
+conf t
+
+vlan 10
+name Alunos
+vlan 20
+name Professores
+vlan 30
+name Financeiros
+vlan 40
+name Academicos
+vlan 60
+name Convidados
+vlan 70
+name Telefones
+vlan 80
+name Impressoras
+vlan 90
+name Gestao
+vlan 999
+name ParkingLot
+exit
+
+interface e0/0
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 60
+switchport trunk allowed vlan 10,20,30,40,60,70,80,90,999
+no shutdown
+exit
+
+interface e0/1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 60
+switchport trunk allowed vlan 10,20,30,40,60,70,80,90,999
+no shutdown
+exit
+
+interface e0/2
+switchport mode access
+switchport access vlan 40
+no shutdown
+exit
+
+interface e0/3
+switchport mode access
+switchport access vlan 70
+no shutdown
+exit
+
+interface e1/0
+switchport mode access
+switchport access vlan 40
+no shutdown
+exit
+
+end
+write memory
