@@ -1,11 +1,5 @@
 ! =====================================================================
 ! R-DC  -  08 - ACL-WAN-IN
-! NOTA: NAO aplicar na interface e0/3 (WAN interna para R-Central).
-! Esta ACL deve ser aplicada no R-ISP, interface e0/0 (virada Internet).
-! Protege o Datacenter (10.30.0.0/24): Gestao DC /29 + Servidores DC /29.
-! So passam os servicos do enunciado (3.5). ICMP/ping NAO e servico listado
-! -> e bloqueado pelo "deny ip any any" (excepto Informatica, acesso total).
-! Aplicar SO NO FIM, depois de testar a conetividade com a ACL desaplicada.
 ! =====================================================================
 
 ip access-list extended ACL-WAN-IN
@@ -32,8 +26,7 @@ ip access-list extended ACL-WAN-IN
  deny ip any any log
 exit
 
-! Aplicar no R-ISP na interface externa (e0/0), NAO no R-DC
-! interface Ethernet0/0
+! interface Ethernet0/3
 !  ip access-group ACL-WAN-IN in
 ! exit
 
