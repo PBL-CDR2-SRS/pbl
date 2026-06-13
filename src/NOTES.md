@@ -70,9 +70,11 @@ V60 `10.20.1.128/29` (native) · V70 `10.20.1.160/27` · V80 `10.20.1.192/28` ·
 - **VPCs (PCs de teste, NAO servidores):** IP estatico com
   `ip [IP_DO_PC] /[MASCARA] [IP_DA_GATEWAY]` e a seguir **obrigatorio** `save`.
   (Em rede normal os PCs recebem IP por DHCP; isto e so para testes com IP fixo.)
-- **Servidores (Ubuntu):** IP atribuido manualmente. Descobrir a placa com `ip a`
-  e depois aplicar o `sudo ip addr add .../29 ... ; ip link set up ; ip route add
-  default ...` de cada ficheiro em `Datacenter/servidores/`.
+- **Servidores (Ubuntu):** IP fixo **persistente** via **netplan** (NAO `ip addr add`,
+  que se perde no reboot). Cada ficheiro em `Datacenter/servidores/` escreve um
+  `/etc/netplan/01-static.yaml` com `dhcp4: false` + endereco + default via `10.30.0.9`,
+  e desativa o cloud-init para nao reverter. IPs: `.10` institucional · `.11` interno
+  · `.12` FTP. O `dhcp4: false` para tambem os discovers parasitas na VLAN 100.
 
 ## Implementacao Avancada (IA) — parte do Rodrigo
 

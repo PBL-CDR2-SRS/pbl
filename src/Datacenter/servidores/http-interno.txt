@@ -1,9 +1,35 @@
 # =====================================================================
 # Servidor HTTP Interno  —  VLAN 100 (Servidores DC, 10.30.0.8/29)
+# IP FIXO: 10.30.0.11/29  ·  gateway: 10.30.0.9
 # Acesso restrito a Professores (Ed.A e Ed.B) e Servicos Academicos (Ed.B).
-# Descobrir a placa de rede primeiro com:  ip a
+# =====================================================================
+# Ubuntu (netplan). Correr na CONSOLA da VM (nao no configurator do GNS3).
+# NOTA: o "ip addr add" e temporario (perde-se no reboot). Isto e persistente.
+# Confirmar a interface com:  ip -br a   (assume-se ens3; se for outra, trocar)
 # =====================================================================
 
-sudo ip addr add 10.30.0.11/29 dev ens3
-sudo ip link set ens3 up
-sudo ip route add default via 10.30.0.9
+# 1. Escrever a configuracao persistente (netplan)
+sudo rm -f /etc/netplan/*.yaml
+sudo tee /etc/netplan/01-static.yaml >/dev/null <<'EOF'
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens3:
+      dhcp4: false
+      addresses: [10.30.0.11/29]
+      routes:
+        - to: default
+          via: 10.30.0.9
+EOF
+sudo chmod 600 /etc/netplan/01-static.yaml
+
+# 2. Impedir que o cloud-init volte a meter DHCP no reboot (se existir)
+echo 'network: {config: disabled}' | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg >/dev/null
+
+# 3. Aplicar
+sudo netplan apply
+
+# 4. Confirmar (deve reter o IP mesmo apos reiniciar o node)
+#    ip -br a   ->  ens3 = 10.30.0.11/29  UP
+#    ip r       ->  default via 10.30.0.9
