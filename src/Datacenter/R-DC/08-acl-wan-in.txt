@@ -1,5 +1,7 @@
 ! =====================================================================
-! R-DC  -  08 - ACL-WAN-IN  (aplicada inbound no WAN = Eth0/3)
+! R-DC  -  08 - ACL-WAN-IN
+! NOTA: NAO aplicar na interface e0/3 (WAN interna para R-Central).
+! Esta ACL deve ser aplicada no R-ISP, interface e0/0 (virada Internet).
 ! Protege o Datacenter (10.30.0.0/24): Gestao DC /29 + Servidores DC /29.
 ! So passam os servicos do enunciado (3.5). ICMP/ping NAO e servico listado
 ! -> e bloqueado pelo "deny ip any any" (excepto Informatica, acesso total).
@@ -13,7 +15,6 @@ ip access-list extended ACL-WAN-IN
  deny ip 10.20.1.128 0.0.0.7 10.30.0.0 0.0.0.15    ! Convidados Ed.B
 
  ! 2. INFORMATICA Ed.A -> acesso total ao bloco dos servidores (/29)
- !    (cobre FTP .12, que e exclusivo da Informatica, e tudo o resto)
  permit ip 10.10.0.144 0.0.0.7 10.30.0.8 0.0.0.7
 
  ! 3. DHCP (os routers Ed.A e Ed.B reencaminham pedidos UDP 67 para o R-DC)
@@ -31,10 +32,10 @@ ip access-list extended ACL-WAN-IN
  deny ip any any log
 exit
 
-! Aplicar a ACL na interface WAN (Eth0/3, sentido entrada) -- SO NO FIM
-interface Ethernet0/3
- ip access-group ACL-WAN-IN in
-exit
+! Aplicar no R-ISP na interface externa (e0/0), NAO no R-DC
+! interface Ethernet0/0
+!  ip access-group ACL-WAN-IN in
+! exit
 
 end
 write
