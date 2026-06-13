@@ -65,7 +65,7 @@ exit
 
 interface e2/1
 description Backup-para-R-EdA
-ip address 10.99.0.17 255.255.255.252
+ip address 10.99.0.18 255.255.255.252
 no shutdown
 exit
 
@@ -77,6 +77,9 @@ ip route 10.30.0.0 255.255.255.0 10.99.0.14
 
 ! Rotas para EdA
 ip route 10.10.0.0 255.255.240.0 10.99.0.14
+
+! Black-hole route (evitar loop na sumarizacao /20)
+ip route 10.20.0.0 255.255.240.0 Null0
 
 end
 write memory
