@@ -1,0 +1,96 @@
+enable
+configure terminal
+hostname SW-Geral-1
+no ip domain-lookup
+no ip routing
+
+vlan 10
+ name Alunos
+vlan 20
+ name Professores
+vlan 50
+ name Informatica
+vlan 60
+ name Convidados
+vlan 70
+ name Telefones
+vlan 80
+ name Impressoras
+vlan 90
+ name Gestao
+vlan 999
+ name ParkingLot
+exit
+
+! Porta para R-EdA (e0/0 do router) — trunk VLANs 10,60,70
+interface e0/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,60,70
+ no shutdown
+
+! Porta para SW-BA2-Dist — trunk com todas as VLANs (redundância)
+interface e0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,50,60,70,80,90
+ no shutdown
+
+! Porta para SW-Geral-2 — segundo link redundante
+interface e1/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,50,60,70,80,90
+ no shutdown
+
+! Portas para os os outros switches 
+interface range e0/2-3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 60
+ switchport trunk allowed vlan 10,20,50,60,70,80,90
+ no shutdown
+
+! Portas access para equipamentos gerais do edifício
+interface e1/3
+ switchport mode access
+ switchport access vlan 70
+ spanning-tree portfast
+ no shutdown
+
+interface e1/2
+ switchport mode access
+ switchport access vlan 80
+ spanning-tree portfast
+ no shutdown
+
+interface e2/0
+ switchport mode access
+ switchport access vlan 60
+ spanning-tree portfast
+ no shutdown
+
+interface e1/1
+ switchport mode access
+ switchport access vlan 60
+ spanning-tree portfast
+ no shutdown
+
+! Portas não usadas → ParkingLot
+interface range e2/1-3, e3/0-3
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+
+spanning-tree com prioridade a 4096 no switch ba1-dist
+
+end
+wr
+
+
+--- mesma logica no switch BA2-Dist
+
+spanning-tree como root secondary 

@@ -1,0 +1,94 @@
+ACL ACADÉMICOS Ed.B (VLAN 40 · e1/2)
+Podem: Internet, DHCP, HTTP institucional, HTTP interno, impressoras
+Não podem: FTP, inter-edifícios, outros segmentos
+Extended IP access list ACL-ACADEMICOS-EDB
+    10 permit udp any any eq bootps
+    20 permit udp any any eq bootpc
+    30 permit tcp 10.20.1.96 0.0.0.31 host 10.30.0.10 eq www
+    40 permit icmp 10.20.1.96 0.0.0.31 host 10.30.0.10
+    50 permit tcp 10.20.1.96 0.0.0.31 host 10.30.0.11 eq www
+    60 permit icmp 10.20.1.96 0.0.0.31 host 10.30.0.11
+    70 permit ip 10.20.1.96 0.0.0.31 10.20.1.192 0.0.0.15
+    80 deny ip 10.20.1.96 0.0.0.31 10.0.0.0 0.255.255.255
+    90 permit ip 10.20.1.96 0.0.0.31 any
+
+
+
+ACL ALUNOS Ed.B (VLAN 10 · e0/1)
+Podem: inter-edifícios, Internet, DHCP, HTTP institucional, impressoras do edifício
+Não podem: FTP, HTTP interno, outros segmentos internos
+Extended IP access list ACL-ALUNOS-EDB
+    10 permit udp any any eq bootps (5 matches)
+    20 permit udp any any eq bootpc
+    30 permit tcp 10.20.0.0 0.0.0.255 host 10.30.0.10 eq www
+    40 permit ip 10.20.0.0 0.0.0.255 10.20.1.192 0.0.0.15 (10 matches)
+    50 permit ip 10.20.0.0 0.0.0.255 10.10.0.0 0.0.15.255 (15 matches)
+    60 deny ip 10.20.0.0 0.0.0.255 10.0.0.0 0.255.255.255 (40 matches)
+    70 permit ip 10.20.0.0 0.0.0.255 any (10 matches)
+
+
+ACL CONVIDADOS Ed.B (VLAN 60 · e1/3)
+Podem: apenas Internet
+Não podem: absolutamente nada interno
+Extended IP access list ACL-CONVIDADOS-EDB
+    10 permit udp any any eq bootps (6 matches)
+    20 permit udp any any eq bootpc
+    30 deny ip 10.20.1.128 0.0.0.7 10.0.0.0 0.255.255.255
+    40 permit ip 10.20.1.128 0.0.0.7 any
+
+
+
+ACL FINANCEIROS Ed.B (VLAN 30 · e1/1)
+Podem: Internet, DHCP, HTTP institucional, impressoras
+Não podem: HTTP interno, FTP, outros segmentos, inter-edifícios
+Extended IP access list ACL-FINANCEIROS-EDB
+    10 permit udp any any eq bootps
+    20 permit udp any any eq bootpc
+    30 permit tcp 10.20.1.64 0.0.0.15 host 10.30.0.10 eq www
+    40 permit icmp 10.20.1.64 0.0.0.15 host 10.30.0.10
+    50 permit ip 10.20.1.64 0.0.0.15 10.20.1.192 0.0.0.15
+    60 deny ip 10.20.1.64 0.0.0.15 10.0.0.0 0.255.255.255
+    70 permit ip 10.20.1.64 0.0.0.15 any
+
+ACL GESTÃO Ed.B (VLAN 90 · e1/0)
+Podem: DHCP, inter-edifício
+Não podem: Internet, servidores de conteúdo
+Extended IP access list ACL-GESTAO-EDB
+    10 permit udp any any eq bootps
+    20 permit udp any any eq bootpc
+    30 permit ip 10.20.1.224 0.0.0.31 10.10.0.0 0.0.15.255
+    40 deny ip any any
+
+
+ACL IMPRESSORAS Ed.B (VLAN 80 · e2/0)
+Podem: apenas DHCP
+Extended IP access list ACL-IMPRESSORAS-EDB
+    10 permit udp any any eq bootps (3 matches)
+    20 permit udp any any eq bootpc
+    30 deny ip any any (15 matches)
+
+
+ACL PROFESSORES Ed.B (VLAN 20 · e0/2)   
+Podem: inter-edifícios, Internet, DHCP, HTTP institucional, HTTP interno, impressoras
+Não podem: FTP, Financeiros, Académicos
+Extended IP access list ACL-PROF-EDB
+    10 permit udp any any eq bootps
+    20 permit udp any any eq bootpc
+    30 permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.10 eq www
+    40 permit icmp 10.20.1.0 0.0.0.63 host 10.30.0.10
+    50 permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.11 eq www
+    60 permit icmp 10.20.1.0 0.0.0.63 host 10.30.0.11
+    70 permit ip 10.20.1.0 0.0.0.63 10.20.1.192 0.0.0.15
+    80 permit ip 10.20.1.0 0.0.0.63 10.10.0.0 0.0.15.255
+    90 deny ip 10.20.1.0 0.0.0.63 10.0.0.0 0.255.255.255
+    100 permit ip 10.20.1.0 0.0.0.63 any
+
+
+ACL TELEFONES Ed.B (VLAN 70 · e0/3)
+Podem: DHCP, inter-edifício
+Não podem: Internet, servidores, outros segmentos
+Extended IP access list ACL-TELEFONES-EDB
+    10 permit udp any any eq bootps
+    20 permit udp any any eq bootpc
+    30 permit ip 10.20.1.160 0.0.0.31 10.10.0.0 0.0.15.255
+    40 deny ip any any

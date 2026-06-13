@@ -1,0 +1,22 @@
+// vlans para Ed-A
+vlan 10
+ name Alunos
+vlan 20
+ name Professores
+vlan 50
+ name Informatica
+vlan 60
+ name Convidados
+vlan 70
+ name Telefones
+vlan 80
+ name Impressoras
+vlan 90
+ name Gestao
+vlan 999
+ name ParkingLot
+exit
+
+
+
+

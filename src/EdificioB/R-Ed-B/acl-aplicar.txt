@@ -1,0 +1,26 @@
+interface e0/1
+ ip access-group ACL-ALUNOS-EDB in
+
+interface e0/2
+ ip access-group ACL-PROF-EDB in
+
+interface e0/3
+ ip access-group ACL-TELEFONES-EDB in
+
+interface e1/0
+ ip access-group ACL-GESTAO-EDB in
+
+interface e1/1
+ ip access-group ACL-FINANCEIROS-EDB in
+
+interface e1/2
+ ip access-group ACL-ACADEMICOS-EDB in
+
+interface e1/3
+ ip access-group ACL-CONVIDADOS-EDB in
+
+interface e2/0
+ ip access-group ACL-IMPRESSORAS-EDB in
+
+end
+wr
