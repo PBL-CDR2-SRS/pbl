@@ -1,25 +1,32 @@
 ! =====================================================================
 ! R-Ed-A  —  02 · Aplicacao das ACLs (inbound em cada sub-interface)
-! Correr SO depois de 00-subinterfaces-ref.txt e 01-acls-definicao.txt.
-! NOTA: confirmar com o Romeu se as sub-interfaces sao e0/0.X ou e0/1.X.
+! [CORRIGIDO: sub-interfaces reais — 10/60/70 em e0/0 ; 20/50/80/90 em e0/1]
+! Correr SO depois de 01-acls-definicao-CORRIGIDO.txt.
+!
+! Divisao das gateways (router-on-a-stick em 2 sticks):
+!   e0/0 (-> BA1-Dist) : VLANs 10, 60(native), 70
+!   e0/1 (-> BA2-Dist) : VLANs 20, 50, 80, 90
 ! =====================================================================
 
 configure terminal
 
-interface Ethernet0/1.10
+! --- Stick e0/0 : Alunos, Convidados, Telefones ---
+interface Ethernet0/0.10
  ip access-group ACL-ALUNOS-EDA in
 exit
+interface Ethernet0/0.60
+ ip access-group ACL-CONVIDADOS-EDA in
+exit
+interface Ethernet0/0.70
+ ip access-group ACL-TELEFONES-EDA in
+exit
+
+! --- Stick e0/1 : Professores, Informatica, Impressoras, Gestao ---
 interface Ethernet0/1.20
  ip access-group ACL-PROF-EDA in
 exit
 interface Ethernet0/1.50
  ip access-group ACL-INFO-EDA in
-exit
-interface Ethernet0/1.60
- ip access-group ACL-CONVIDADOS-EDA in
-exit
-interface Ethernet0/1.70
- ip access-group ACL-TELEFONES-EDA in
 exit
 interface Ethernet0/1.80
  ip access-group ACL-IMPRESSORAS-EDA in
