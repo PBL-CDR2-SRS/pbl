@@ -1,259 +1,85 @@
 enable
 conf t
 
-! 1 · BASE
-hostname R-EdB
-no ip domain-lookup
-
-
-! 2 · INTERFACES LAN  (inter-VLAN legacy: 1 porto fisico = 1 VLAN)
-!     Cada porto liga a uma porta ACCESS do switch na respetiva VLAN.
-!     NAO ha trunk para o router (isso so existe no Ed.A / RoaS).
-interface Ethernet0/1
- description VLAN10-Alunos-EdB
- ip address 10.20.0.1 255.255.255.0
- ip helper-address 10.30.0.9
- no shutdown
+interface e0/1
+description VLAN10-Alunos-EdB
+ip address 10.20.0.1 255.255.255.0
+ip helper-address 10.30.0.9
+no shutdown
 exit
 
-interface Ethernet0/2
- description VLAN20-Professores-EdB
- ip address 10.20.1.1 255.255.255.192
- ip helper-address 10.30.0.9
- no shutdown
+interface e0/2
+description VLAN20-Professores-EdB
+ip address 10.20.1.1 255.255.255.192
+ip helper-address 10.30.0.9
+no shutdown
 exit
 
-interface Ethernet0/3
- description VLAN70-Telefones-EdB
- ip address 10.20.1.161 255.255.255.224
- ip helper-address 10.30.0.9
- no shutdown
+interface e0/3
+description VLAN70-Telefones-EdB
+ip address 10.20.1.161 255.255.255.224
+ip helper-address 10.30.0.9
+no shutdown
 exit
 
-interface Ethernet1/0
+interface e1/0
  description VLAN90-Gestao-EdB
  ip address 10.20.1.225 255.255.255.224
  ip helper-address 10.30.0.9
  no shutdown
 exit
 
-interface Ethernet1/1
- description VLAN30-Financeiros-EdB
- ip address 10.20.1.65 255.255.255.240
- ip helper-address 10.30.0.9
- no shutdown
+interface e1/1
+description VLAN30-Financeiros-EdB
+ip address 10.20.1.65 255.255.255.240
+ip helper-address 10.30.0.9
+no shutdown
 exit
 
-interface Ethernet1/2
- description VLAN40-Academicos-EdB
- ip address 10.20.1.97 255.255.255.224
- ip helper-address 10.30.0.9
- no shutdown
+interface e1/2
+description VLAN40-Academicos-EdB
+ip address 10.20.1.97 255.255.255.224
+ip helper-address 10.30.0.9
+no shutdown
 exit
 
-interface Ethernet1/3
- description VLAN60-Convidados-EdB
- ip address 10.20.1.129 255.255.255.248
- ip helper-address 10.30.0.9
- no shutdown
+interface e1/3
+description VLAN60-Convidados-EdB
+ip address 10.20.1.129 255.255.255.248
+ip helper-address 10.30.0.9
+no shutdown
 exit
 
-interface Ethernet2/0
- description VLAN80-Impressoras-EdB
- ip address 10.20.1.193 255.255.255.240
- ip helper-address 10.30.0.9
- no shutdown
+interface e2/0
+description VLAN80-Impressoras-EdB
+ip address 10.20.1.193 255.255.255.240
+ip helper-address 10.30.0.9
+no shutdown
 exit
 
-
-! 3 · INTERFACES WAN + BACKUP
-interface Ethernet0/0
- description WAN-para-R-Central
- ip address 10.99.0.13 255.255.255.252
- no shutdown
+interface e0/0
+description WAN-para-R-Central
+ip address 10.99.0.13 255.255.255.252
+no shutdown
 exit
 
-! --- Link direto Ed.B <-> Ed.A (10.99.0.16/30, R-EdB=.18) ---
-!     So usado como BACKUP L3 (floating route, ver seccao 4).
-interface Ethernet2/1
- description Backup-L3-para-R-EdA
- ip address 10.99.0.18 255.255.255.252
- no shutdown
+interface e2/1
+description Backup-para-R-EdA
+ip address 10.99.0.18 255.255.255.252
+no shutdown
 exit
 
+! Rota default -> R-C como next-hop
+ip route 0.0.0.0 0.0.0.0 10.99.0.14
 
-! 4 · ROTAS ESTATICAS  (controladas — so destinos especificos)
-!  ALTERACOES (pedido Professor):
-!   - REMOVIDA a rota Null0 de black-hole do proprio /20.
-!     Ja nao e precisa: sem rota default, trafego para 10.20.x.x
-!     desconhecido nao tem para onde ir -> e descartado por "no route".
-!     (Antes a Null0 apanhava o que a default reenviava para o R-C e
-!      causaria loop. Sem default, sem loop -> Null0 redundante.)
-!   - REMOVIDA a rota default 0.0.0.0/0. Routing mais controlado:
-!     so encaminhamos para redes internas conhecidas.
-
-! Datacenter (10.30.0.0/24) via R-Central
+! Rotas para o DC
 ip route 10.30.0.0 255.255.255.0 10.99.0.14
 
-! Edificio A (10.10.0.0/20) — PRIMARIA via R-Central (AD 1)
+! Rotas para EdA
 ip route 10.10.0.0 255.255.240.0 10.99.0.14
 
-! Edificio A — BACKUP (floating) pelo link direto, AD=200.
-!  So entra na tabela se a primaria via R-C cair. Para "flutuar"
-!  corretamente, a primaria /20 acima TEM de existir como rota
-!  especifica (era o que a antiga default mascarava).
-ip route 10.10.0.0 255.255.240.0 10.99.0.17 200
-
-! Links WAN internos (10.99.0.0/24) via R-Central — visibilidade/
-! diagnostico (traceroute, ping a interfaces WAN). Opcional mas util.
-ip route 10.99.0.0 255.255.255.0 10.99.0.14
-
-! ---------------------------------------------------------------------
-!  >>> DECISAO EM ABERTO: INTERNET PARA O EDIFICIO B <<<
-!  Sem rota default, os segmentos do Ed.B NAO chegam a Internet
-!  (as ACLs ainda tem "permit ... any" mas ficam sem caminho de saida).
-!  Se o enunciado exigir Internet no Ed.B, DESCOMENTAR a linha abaixo.
-!  Continua "controlado": e a unica rota de ultimo recurso, identificada.
-! ip route 0.0.0.0 0.0.0.0 10.99.0.14   ! Internet (last resort) -> R-C
-! ---------------------------------------------------------------------
-
-
-! =====================================================================
-! 5 · DEFINICAO DAS ACLs  (extended, inbound em cada interface LAN)
-! ---------------------------------------------------------------------
-!  DHCP: bootps=67 (cliente->servidor) e bootpc=68 (servidor->cliente).
-!        Ambos sao precisos, senao o "deny" final mata o OFFER/ACK.
-!  ICMP: adicionado "permit icmp" para os servidores que cada segmento
-!        ja podia aceder por HTTP (permite ping/diagnostico).
-!  Servidores DC: HTTP institucional 10.30.0.10 · HTTP interno 10.30.0.11
-! =====================================================================
-
-! --- ALUNOS Ed.B (VLAN 10 · e0/1) ---
-!  Podem: DHCP, HTTP institucional (+ping), impressoras, inter-edificios, Internet
-ip access-list extended ACL-ALUNOS-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- permit tcp 10.20.0.0 0.0.0.255 host 10.30.0.10 eq www
- permit icmp 10.20.0.0 0.0.0.255 host 10.30.0.10              ! ping ao site institucional
- permit ip 10.20.0.0 0.0.0.255 10.20.1.192 0.0.0.15           ! Impressoras Ed.B
- permit ip 10.20.0.0 0.0.0.255 10.10.0.0 0.0.15.255           ! Inter-edificios (Ed.A)
- deny ip 10.20.0.0 0.0.0.255 10.0.0.0 0.255.255.255           ! Bloqueia resto interno
- permit ip 10.20.0.0 0.0.0.255 any                            ! Internet
-exit
-
-! --- PROFESSORES Ed.B (VLAN 20 · e0/2) ---
-!  Podem: DHCP, HTTP institucional + interno (+ping), impressoras, inter-edificios, Internet
-ip access-list extended ACL-PROF-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.10 eq www
- permit icmp 10.20.1.0 0.0.0.63 host 10.30.0.10
- permit tcp 10.20.1.0 0.0.0.63 host 10.30.0.11 eq www
- permit icmp 10.20.1.0 0.0.0.63 host 10.30.0.11
- permit ip 10.20.1.0 0.0.0.63 10.20.1.192 0.0.0.15            ! Impressoras Ed.B
- permit ip 10.20.1.0 0.0.0.63 10.10.0.0 0.0.15.255            ! Inter-edificios (Ed.A)
- deny ip 10.20.1.0 0.0.0.63 10.0.0.0 0.255.255.255
- permit ip 10.20.1.0 0.0.0.63 any
-exit
-
-! --- FINANCEIROS Ed.B (VLAN 30 · e1/1) ---
-!  Podem: DHCP, HTTP institucional (+ping), impressoras, Internet
-ip access-list extended ACL-FINANCEIROS-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- permit tcp 10.20.1.64 0.0.0.15 host 10.30.0.10 eq www
- permit icmp 10.20.1.64 0.0.0.15 host 10.30.0.10
- permit ip 10.20.1.64 0.0.0.15 10.20.1.192 0.0.0.15           ! Impressoras Ed.B
- deny ip 10.20.1.64 0.0.0.15 10.0.0.0 0.255.255.255
- permit ip 10.20.1.64 0.0.0.15 any
-exit
-
-! --- ACADEMICOS Ed.B (VLAN 40 · e1/2) ---
-!  Podem: DHCP, HTTP institucional + interno (+ping), impressoras, Internet
-ip access-list extended ACL-ACADEMICOS-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- permit tcp 10.20.1.96 0.0.0.31 host 10.30.0.10 eq www
- permit icmp 10.20.1.96 0.0.0.31 host 10.30.0.10
- permit tcp 10.20.1.96 0.0.0.31 host 10.30.0.11 eq www
- permit icmp 10.20.1.96 0.0.0.31 host 10.30.0.11
- permit ip 10.20.1.96 0.0.0.31 10.20.1.192 0.0.0.15           ! Impressoras Ed.B
- deny ip 10.20.1.96 0.0.0.31 10.0.0.0 0.255.255.255
- permit ip 10.20.1.96 0.0.0.31 any
-exit
-
-! --- CONVIDADOS Ed.B (VLAN 60 · e1/3) ---
-!  Podem: SO Internet. Nada interno (nem ICMP interno).
-ip access-list extended ACL-CONVIDADOS-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- deny ip 10.20.1.128 0.0.0.7 10.0.0.0 0.255.255.255
- permit ip 10.20.1.128 0.0.0.7 any
-exit
-
-! --- TELEFONES Ed.B (VLAN 70 · e0/3) ---
-!  Podem: DHCP, inter-edificio (Ed.A, inclui ICMP via "permit ip"). Sem Internet.
-ip access-list extended ACL-TELEFONES-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- permit ip 10.20.1.160 0.0.0.31 10.10.0.0 0.0.15.255
- deny ip any any
-exit
-
-! --- GESTAO Ed.B (VLAN 90 · e1/0) ---
-!  Podem: DHCP, inter-edificio (Ed.A). Sem Internet nem servidores de conteudo.
-ip access-list extended ACL-GESTAO-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- permit ip 10.20.1.224 0.0.0.31 10.10.0.0 0.0.15.255
- deny ip any any
-exit
-
-! --- IMPRESSORAS Ed.B (VLAN 80 · e2/0) ---
-!  Podem: SO DHCP.
-ip access-list extended ACL-IMPRESSORAS-EDB
- permit udp any any eq bootps
- permit udp any any eq bootpc
- deny ip any any
-exit
-
-
-! =====================================================================
-! 6 · APLICACAO DAS ACLs  (inbound em cada interface LAN)
-! =====================================================================
-interface Ethernet0/1
- ip access-group ACL-ALUNOS-EDB in
-exit
-interface Ethernet0/2
- ip access-group ACL-PROF-EDB in
-exit
-interface Ethernet0/3
- ip access-group ACL-TELEFONES-EDB in
-exit
-interface Ethernet1/0
- ip access-group ACL-GESTAO-EDB in
-exit
-interface Ethernet1/1
- ip access-group ACL-FINANCEIROS-EDB in
-exit
-interface Ethernet1/2
- ip access-group ACL-ACADEMICOS-EDB in
-exit
-interface Ethernet1/3
- ip access-group ACL-CONVIDADOS-EDB in
-exit
-interface Ethernet2/0
- ip access-group ACL-IMPRESSORAS-EDB in
-exit
+! Black-hole route (evitar loop na sumarizacao /20)
+ip route 10.20.0.0 255.255.240.0 Null0
 
 end
 write memory
-
-! ---------------------------------------------------------------------
-! TESTES RAPIDOS
-!  show ip route                      -> sem default, sem Null0
-!  show ip route 10.10.0.0            -> next-hop 10.99.0.14 (via R-C)
-!  ping de host Ed.B -> 10.30.0.10    -> OK (ICMP agora permitido)
-!  Failover L3: shutdown e0/0 (WAN) -> show ip route 10.10.0.0
-!               passa a next-hop 10.99.0.18 (link direto, AD 200)
-! ---------------------------------------------------------------------
