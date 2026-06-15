@@ -60,7 +60,7 @@ interface e1/1
 switchport trunk encapsulation dot1q
 switchport mode trunk
 switchport trunk native vlan 60
-switchport trunk allowed vlan 10,20,60,70,80,90,999
+switchport trunk allowed vlan 10,20,70,90
 no shutdown
 exit
 
@@ -68,7 +68,7 @@ interface e1/2
 switchport trunk encapsulation dot1q
 switchport mode trunk
 switchport trunk native vlan 60
-switchport trunk allowed vlan 10,20,60,70,80,90,999
+switchport trunk allowed vlan 10,20,70,90
 no shutdown
 exit
 
